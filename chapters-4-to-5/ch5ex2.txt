@@ -1,0 +1,5 @@
+
+This is a file to open.
+Chapter 5.
+Exercise 2.
+wrote after setting offset to the beginning of file opened with O_APPEND

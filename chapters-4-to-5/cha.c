@@ -18,8 +18,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#define BUF_SIZE 512
-#define MAX_NUMBER_FILES 12
+#define BUF_SIZE          512
+#define MAX_NUMBER_FILES  12
 
 void parse_args(int argc, char** argv)
 {
@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     }
   }
 
-  /* That is: no files provided. optind = 1 means that no options were found */
+  /* optind = 1 means that no options were found */
   while(bytes_read) {
     bytes_read = read(STDIN_FILENO, buffer, BUF_SIZE);
 
