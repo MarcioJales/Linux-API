@@ -34,6 +34,11 @@ int main(int argc, char** argv)
   int fd, flag_x = 0;
   char** endptr;
 
+  if(argc < 3) {
+    fprintf(stderr, "atomic_append filename num_bytes [x]\n");
+    exit(EXIT_FAILURE);
+  }
+
   num_bytes = strtol(argv[2], endptr, 10);
   if(**endptr != 0) {
     fprintf(stderr, "Invalid number of bytes\n");
