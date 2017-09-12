@@ -9,7 +9,7 @@
  * The functions were named "heapAlloc" and "heapFree" so that they cannot be confused with complete malloc implementations
  * Program break will never become less than the half of the maximum bytes allocated.
  * Heap is allocated/freed only in ALLOC_THRESHOLD chuncks.
- * 2 separated double-linked lists will are created for the allocated and free blocks lists.
+ * 2 separated double-linked lists are created for the allocated and free blocks lists.
  *
  * **** ON PROGRESS ****
  *
@@ -31,7 +31,7 @@ struct blk_header {
 static struct blk_header *allocdlist = NULL;
 static struct blk_header *freelist = NULL;
 
-static struct blk_header * searchFreeBlk(size_t size)
+static struct blk_header * searchAtFreeList(size_t size)
 {
   if(freelist == NULL)
     return NULL;
@@ -47,9 +47,9 @@ static struct blk_header * searchFreeBlk(size_t size)
     }
   }
   return NULL;
-};
+}
 
-static void addFreeBlk(void *oldbrk, long int bytes_to_alloc)
+static void extendFreeList(void *oldbrk, long int bytes_to_alloc)
 {
   if(freelist == NULL) {
     freelist = oldbrk;
@@ -58,24 +58,57 @@ static void addFreeBlk(void *oldbrk, long int bytes_to_alloc)
     freelist->nextblk = NULL;
   }
   else {
-    struct blk_header *currentblk = freelist;
+    struct blk_header *headFL = freelist;
 
-    while(currentblk->nextblk != NULL)
-      currentblk = currentblk->nextblk;
+    while(freelist->nextblk != NULL)
+      freelist = freelist->nextblk;
 
-    if((uint8_t *) currentblk + currentblk->length == oldbrk) {
-      currentblk->length += bytes_to_alloc;
-    }
+    if((uint8_t *) freelist + freelist->length == oldbrk)
+      freelist->length += bytes_to_alloc;
     else {
-      currentblk->nextblk = oldbrk;
-      (currentblk->nextblk)->length = bytes_to_alloc;
-      (currentblk->nextblk)->prevblk = currentblk;
-      (currentblk->nextblk)->nextblk = NULL;
+      freelist->nextblk = oldbrk;
+      (freelist->nextblk)->length = bytes_to_alloc;
+      (freelist->nextblk)->prevblk = freelist;
+      (freelist->nextblk)->nextblk = NULL;
     }
-  }
-};
 
-static void updateAllocdList(struct blk_header *newblk, size_t size)
+    freelist = headFL;
+  }
+}
+
+static void removeFromFreeList(struct blk_header *newblk, size_t size)
+{
+  struct blk_header *headFL = freelist;
+
+  while(freelist != newblk)
+    freelist = freelist->nextblk;
+
+  if(freelist->length == size) {
+    if(freelist == headFL) {
+      freelist = freelist->nextblk;
+      return;
+    }
+
+    if(freelist->prevblk != NULL)
+      (freelist->prevblk)->nextblk = freelist->nextblk;
+    if(freelist->nextblk != NULL)
+      (freelist->nextblk)->prevblk= freelist->prevblk;
+
+    freelist = NULL;
+    freelist = headFL;
+  }
+  else {
+    freelist = (struct blk_header *) ((uint8_t *) newblk + size);
+    freelist->length = newblk->length - size;
+    freelist->prevblk = newblk->prevblk;
+    freelist->nextblk = newblk->nextblk;
+
+    if(freelist != (struct blk_header *) ((uint8_t *) headFL + size))
+      freelist = headFL;
+  }
+}
+
+static void addOnAllocdList(struct blk_header *newblk, size_t size)
 {
   if(allocdlist == NULL) {
     allocdlist = newblk;
@@ -83,12 +116,31 @@ static void updateAllocdList(struct blk_header *newblk, size_t size)
     allocdlist->prevblk = NULL;
     allocdlist->nextblk = NULL;
   }
-};
+  else {
+    struct blk_header *headAL = allocdlist;
+
+    while(allocdlist->nextblk != NULL)
+      allocdlist = allocdlist->nextblk;
+
+    allocdlist->nextblk = newblk;
+    (allocdlist->nextblk)->length = size;
+    (allocdlist->nextblk)->prevblk = allocdlist;
+    (allocdlist->nextblk)->nextblk = NULL;
+
+    if(allocdlist != headAL);
+      allocdlist = headAL;
+  }
+}
+
+static void updateLists(struct blk_header *newblk, size_t size)
+{
+  removeFromFreeList(newblk, size);
+  addOnAllocdList(newblk, size);
+}
 
 void* heapAlloc(size_t size)
 {
   long int bytes_to_alloc;
-  static int c = 0;
   void *old_brk = NULL;
   struct blk_header *new_blk;
 
@@ -99,25 +151,23 @@ void* heapAlloc(size_t size)
   if(size < sizeof(struct blk_header))
     size = sizeof(struct blk_header);
 
-  new_blk = searchFreeBlk(size);
-  if(new_blk == NULL) {
-      if(freelist == NULL && allocdlist == NULL)
-        bytes_to_alloc = (size/ALLOC_THRESHOLD + 1) * ALLOC_THRESHOLD;
-      else
-        bytes_to_alloc = (size/ALLOC_THRESHOLD) * ALLOC_THRESHOLD;
+  new_blk = searchAtFreeList(size);
+  while(new_blk == NULL) {
+    if(freelist == NULL)
+      bytes_to_alloc = (size/ALLOC_THRESHOLD + 1) * ALLOC_THRESHOLD;
+    else
+      bytes_to_alloc = (size/ALLOC_THRESHOLD) * ALLOC_THRESHOLD;
 
-      old_brk = sbrk(bytes_to_alloc);
-      if(old_brk == (void *) -1)
-        return NULL;
+    old_brk = sbrk(bytes_to_alloc);
+    if(old_brk == (void *) -1)
+      return NULL;
 
-      addFreeBlk(old_brk, bytes_to_alloc);
-      new_blk = searchFreeBlk(size);
-      printf("%p, %ld, %p, %p\n", new_blk, new_blk->length, new_blk->prevblk, new_blk->nextblk);
+    extendFreeList(old_brk, bytes_to_alloc);
+    new_blk = searchAtFreeList(size);
   }
-  updateAllocdList(new_blk, size);
-  printf("%p, %ld, %p, %p\n", allocdlist, allocdlist->length, allocdlist->prevblk, allocdlist->nextblk);
+  updateLists(new_blk, size);
 
-  return NULL;
+  return new_blk;
 }
 
 void heapFree(void *ptr)
@@ -129,33 +179,12 @@ int main()
 {
   char *str, *str2;
   printf("\n\n");
-  str2 = (char*) heapAlloc(4096);
-
+  str = (char*) heapAlloc(4096);
+  printf("heapAlloc(4096) = %p\n", str);
+  str = (char*) heapAlloc(512);
+  printf("heapAlloc(512) = %p\n", str);
+  str = (char*) heapAlloc(512);
+  printf("heapAlloc(512) = %p\n", str);
+  printf("\n\n");
   return 0;
 }
-
-/*
-
-addFreeBlk(old_brk, bytes_to_alloc);
-printf("%p\n", freelist);
-printf("%p, %ld, %p, %p\n", freelist, freelist->length, freelist->prevblk, freelist->nextblk);
-
-//printf("+ = %p\n", (uint8_t *) currentblk + currentblk->length);
-if((uint8_t *) currentblk + currentblk->length == oldbrk) {
-  currentblk->length += bytes_to_alloc;
-  //printf("cbl = %ld\n", currentblk->length);
-
-printf("now_brk = %p\n", sbrk(0));
-old_brk = sbrk(bytes_to_alloc);
-printf("bytes_to_alloc = %ld, old_brk = %p, now_brk = %p\n", bytes_to_alloc, old_brk, sbrk(0));
-
-void* myAlloc(size_t size)
-{
-  static void *old_brk;
-
-  printf("old_brk = %p, now_brk = %p\n", old_brk, sbrk(0));
-  old_brk = sbrk(size);
-  printf("bytes_to_alloc = %ld, old_brk = %p, now_brk = %p\n", size, old_brk, sbrk(0));
-
-  return NULL;
-}*/
