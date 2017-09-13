@@ -21,6 +21,9 @@
 #include <stdio.h>
 #include "memalloc.h"
 
+#define FREE_LIST   0
+#define ALLOC_LIST  1
+
 
 struct blk_header {
   long int length;
@@ -31,7 +34,7 @@ struct blk_header {
 static struct blk_header *allocdlist = NULL;
 static struct blk_header *freelist = NULL;
 
-static struct blk_header * searchAtFreeList(size_t size)
+static struct blk_header * searchAtList(size_t size, uint8_t whichlist)
 {
   if(freelist == NULL)
     return NULL;
@@ -49,34 +52,7 @@ static struct blk_header * searchAtFreeList(size_t size)
   return NULL;
 }
 
-static void extendFreeList(void *oldbrk, long int bytes_to_alloc)
-{
-  if(freelist == NULL) {
-    freelist = oldbrk;
-    freelist->length = bytes_to_alloc;
-    freelist->prevblk = NULL;
-    freelist->nextblk = NULL;
-  }
-  else {
-    struct blk_header *headFL = freelist;
-
-    while(freelist->nextblk != NULL)
-      freelist = freelist->nextblk;
-
-    if((uint8_t *) freelist + freelist->length == oldbrk)
-      freelist->length += bytes_to_alloc;
-    else {
-      freelist->nextblk = oldbrk;
-      (freelist->nextblk)->length = bytes_to_alloc;
-      (freelist->nextblk)->prevblk = freelist;
-      (freelist->nextblk)->nextblk = NULL;
-    }
-
-    freelist = headFL;
-  }
-}
-
-static void removeFromFreeList(struct blk_header *newblk, size_t size)
+static void removeFromList(struct blk_header *newblk, size_t size, uint8_t whichlist)
 {
   struct blk_header *headFL = freelist;
 
@@ -108,34 +84,43 @@ static void removeFromFreeList(struct blk_header *newblk, size_t size)
   }
 }
 
-static void addOnAllocdList(struct blk_header *newblk, size_t size)
+static void addOnList(void *addr, size_t size, uint8_t whichlist)
 {
-  if(allocdlist == NULL) {
-    allocdlist = newblk;
-    allocdlist->length = size;
-    allocdlist->prevblk = NULL;
-    allocdlist->nextblk = NULL;
+  struct blk_header **list;
+
+  if(whichlist == ALLOC_LIST)
+    list = &allocdlist;
+  if(whichlist == FREE_LIST)
+    list = &freelist;
+
+  if(*list == NULL) {
+    *list = addr;
+    (*list)->length = size;
+    (*list)->prevblk = NULL;
+    (*list)->nextblk = NULL;
   }
   else {
-    struct blk_header *headAL = allocdlist;
+    struct blk_header *head = *list;
 
-    while(allocdlist->nextblk != NULL)
-      allocdlist = allocdlist->nextblk;
+    while((*list)->nextblk != NULL)
+      *list = (*list)->nextblk;
 
-    allocdlist->nextblk = newblk;
-    (allocdlist->nextblk)->length = size;
-    (allocdlist->nextblk)->prevblk = allocdlist;
-    (allocdlist->nextblk)->nextblk = NULL;
+    if((uint8_t *) *list + (*list)->length == addr && whichlist == FREE_LIST) {
+      (*list)->length += size;
+      freelist = head;
+      return;
+    }
 
-    if(allocdlist != headAL);
-      allocdlist = headAL;
+    (*list)->nextblk = addr;
+    ((*list)->nextblk)->length = size;
+    ((*list)->nextblk)->prevblk = *list;
+    ((*list)->nextblk)->nextblk = NULL;
+
+    if(whichlist == ALLOC_LIST)
+      allocdlist = head;
+    if(whichlist == FREE_LIST)
+      freelist = head;
   }
-}
-
-static void updateLists(struct blk_header *newblk, size_t size)
-{
-  removeFromFreeList(newblk, size);
-  addOnAllocdList(newblk, size);
 }
 
 void* heapAlloc(size_t size)
@@ -151,7 +136,7 @@ void* heapAlloc(size_t size)
   if(size < sizeof(struct blk_header))
     size = sizeof(struct blk_header);
 
-  new_blk = searchAtFreeList(size);
+  new_blk = searchAtList(size, FREE_LIST);
   while(new_blk == NULL) {
     if(freelist == NULL)
       bytes_to_alloc = (size/ALLOC_THRESHOLD + 1) * ALLOC_THRESHOLD;
@@ -162,10 +147,11 @@ void* heapAlloc(size_t size)
     if(old_brk == (void *) -1)
       return NULL;
 
-    extendFreeList(old_brk, bytes_to_alloc);
-    new_blk = searchAtFreeList(size);
+    addOnList(old_brk, bytes_to_alloc, FREE_LIST);
+    new_blk = searchAtList(size, FREE_LIST);
   }
-  updateLists(new_blk, size);
+  removeFromList(new_blk, size, FREE_LIST);
+  addOnList(new_blk, size, ALLOC_LIST);
 
   return new_blk;
 }
@@ -177,14 +163,21 @@ void heapFree(void *ptr)
 
 int main()
 {
-  char *str, *str2;
+  char *str1, *str2, *str3;
   printf("\n\n");
-  str = (char*) heapAlloc(4096);
-  printf("heapAlloc(4096) = %p\n", str);
-  str = (char*) heapAlloc(512);
-  printf("heapAlloc(512) = %p\n", str);
-  str = (char*) heapAlloc(512);
-  printf("heapAlloc(512) = %p\n", str);
+
+  str1 = (char*) heapAlloc(4608);
+  printf("heapAlloc(4608) = %p\n", str1);
+  str1 = (char*) heapAlloc(4608);
+  printf("heapAlloc(4608) = %p\n", str1);
+  str2 = (char*) heapAlloc(512);
+  printf("heapAlloc(512) = %p\n", str2);
+  str3 = (char*) heapAlloc(512);
+  printf("heapAlloc(512) = %p\n", str3);
+  str3 = (char*) heapAlloc(256);
+  printf("heapAlloc(256) = %p\n", str3);
+
   printf("\n\n");
+
   return 0;
 }
