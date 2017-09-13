@@ -105,6 +105,7 @@ static void addOnList(void *addr, size_t size, uint8_t whichlist)
     while((*list)->nextblk != NULL)
       *list = (*list)->nextblk;
 
+    /* This is to coalesce free areas */
     if((uint8_t *) *list + (*list)->length == addr && whichlist == FREE_LIST) {
       (*list)->length += size;
       freelist = head;
