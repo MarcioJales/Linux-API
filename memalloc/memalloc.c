@@ -254,9 +254,9 @@ static void printList()
     i++;
   }
   allocdlist = head;
-}
+}*/
 
-/* ---------------------------------------------------------------------------------------------*/
+/* --------------------------------------------------------------------------------------------- */
 int main()
 {
   char *str[128];
@@ -352,7 +352,7 @@ int main()
   printf("\n\n");
   printList();
   printf("\n\n");
-  /* Test working until here */
+  //Test working until here
 
   return 0;
 }
