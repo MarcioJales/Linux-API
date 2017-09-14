@@ -1,4 +1,4 @@
 | Name | Assignment |
 | ---- | ---------- |
-| cha.c | exercise 1 from chapter 4 |
-| atomic_append.c | exercise 3 from chapter 5 |
+| cha.c | Exercise 1 from chapter 4 |
+| atomic_append.c | Exercise 3 from chapter 5 |
