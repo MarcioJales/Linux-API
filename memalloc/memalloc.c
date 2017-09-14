@@ -34,7 +34,7 @@ struct blockheader {
 static struct blockheader *allocdlist = NULL;
 static struct blockheader *freelist = NULL;
 
-/* ----------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------*/
 static struct blockheader * searchAtFreeList(size_t size)
 {
   if(freelist == NULL)
@@ -52,6 +52,7 @@ static struct blockheader * searchAtFreeList(size_t size)
   return NULL;
 }
 
+/* ---------------------------------------------------------------------------------------------*/
 static struct blockheader * searchAtAllocdList(void *ptr)
 {
   if(allocdlist == NULL)
@@ -68,7 +69,7 @@ static struct blockheader * searchAtAllocdList(void *ptr)
   return NULL;
 }
 
-/* ----------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------*/
 static void removeFromList(struct blockheader *addr, size_t size, uint8_t whichlist)
 {
   struct blockheader **list;
@@ -107,29 +108,25 @@ static void removeFromList(struct blockheader *addr, size_t size, uint8_t whichl
 
     if((*list)->nextblk != NULL)
       ((*list)->nextblk)->prevblk = *list;
-    if((*list)->prevblk != NULL)
+    if((*list)->prevblk != NULL) {
       ((*list)->prevblk)->nextblk = *list;
-
-    if(*list != (struct blockheader *) ((uint8_t *) head + size))
-    {
-      if(whichlist == ALLOC_LIST)
-        allocdlist = head;
-      if(whichlist == FREE_LIST)
-        freelist = head;
+      *list = head; /* the list must have the head adjusted since we alter the lists by reference */
     }
-
   }
 }
 
-/* ----------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------*/
 static void addOnList(void *addr, size_t size, uint8_t whichlist)
 {
   struct blockheader **list;
+  struct blockheader *head;
 
   if(whichlist == ALLOC_LIST)
     list = &allocdlist;
   if(whichlist == FREE_LIST)
     list = &freelist;
+
+  head = *list;
 
   if(*list == NULL) {
     *list = addr;
@@ -137,15 +134,31 @@ static void addOnList(void *addr, size_t size, uint8_t whichlist)
     (*list)->prevblk = NULL;
     (*list)->nextblk = NULL;
   }
-  else {
-    struct blockheader *head = *list;
-
-    while(1) {
-      /* Coalescing freelist. It happens only when a free block is right after another one */
-      if(whichlist == FREE_LIST) {
+  else
+  {
+    while(1)
+    {
+      if(whichlist == FREE_LIST)
+      {
+        /* If the block freed can be coalesced wether to previous or next block */
         if((uint8_t *) *list + (*list)->length == addr) {
           (*list)->length += size;
           freelist = head;
+          return;
+        }
+        else if((uint8_t *) *list - size /*addr->length*/ == addr)
+        {
+          ((struct blockheader *) addr)->length += (*list)->length;
+          ((struct blockheader *) addr)->nextblk = (*list)->nextblk;
+          ((struct blockheader *) addr)->prevblk = (*list)->prevblk;
+          *list = addr;
+
+          if((*list)->nextblk != NULL)
+            ((*list)->nextblk)->prevblk = *list;
+          if((*list)->prevblk != NULL) {
+            ((*list)->prevblk)->nextblk = *list;
+            freelist = head;
+          }
           return;
         }
       }
@@ -160,14 +173,11 @@ static void addOnList(void *addr, size_t size, uint8_t whichlist)
     ((*list)->nextblk)->prevblk = *list;
     ((*list)->nextblk)->nextblk = NULL;
 
-    if(whichlist == ALLOC_LIST)
-      allocdlist = head;
-    if(whichlist == FREE_LIST)
-      freelist = head;
+    *list = head;
   }
 }
 
-/* ----------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------*/
 void* heapAlloc(size_t size)
 {
   long int bytesalloc;
@@ -199,7 +209,7 @@ void* heapAlloc(size_t size)
   return newblk + 1;
 }
 
-/* ----------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------*/
 void heapFree(void *ptr)
 {
   struct blockheader *rmblk;
@@ -217,7 +227,7 @@ void heapFree(void *ptr)
   addOnList(rmblk, rmblk->length, FREE_LIST);
 }
 
-/* ----------------------------------------------------------------*/
+/* ---------------------------------------------------------------------------------------------*/
 static void printList()
 {
   struct blockheader *head = freelist;
@@ -246,6 +256,7 @@ static void printList()
   allocdlist = head;
 }
 
+/* ---------------------------------------------------------------------------------------------*/
 int main()
 {
   char *str[128];
@@ -323,6 +334,21 @@ int main()
   printf("\n\n");
   str[9] = (char*) heapAlloc(900);
   printf("str[9] = heapAlloc(900) = %p\n", str[9]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  heapFree(str[8]);
+  printf("heapFree(str[8])\n");
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[10] = (char*) heapAlloc(2030);
+  printf("str[10] = heapAlloc(2030) = %p\n", str[10]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  heapFree(str[9]);
+  printf("heapFree(str[9])\n");
   printf("\n\n");
   printList();
   printf("\n\n");

@@ -1,482 +1,590 @@
 
 
-str[0] = heapAlloc(9000) = 0x7ca018
+str[0] = heapAlloc(9000) = 0x2451018
 
 
-[0] freelist = 0x7cc340
+[0] freelist = 0x2453340
 [0] freelist->length = 3264
 [0] freelist->prevblk = (nil)
 [0] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
 [0] allocdlist->nextblk = (nil)
 
 
-str[1] = heapAlloc(4608) = 0x7cc358
+str[1] = heapAlloc(4608) = 0x2453358
 
 
-[0] freelist = 0x7cd558
+[0] freelist = 0x2454558
 [0] freelist->length = 2728
 [0] freelist->prevblk = (nil)
 [0] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
+[1] allocdlist->prevblk = 0x2451000
 [1] allocdlist->nextblk = (nil)
 
 
-str[2] = heapAlloc(512) = 0x7cd570
+str[2] = heapAlloc(512) = 0x2454570
 
 
-[0] freelist = 0x7cd770
+[0] freelist = 0x2454770
 [0] freelist->length = 2192
 [0] freelist->prevblk = (nil)
 [0] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cd558
-[2] allocdlist = 0x7cd558
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454558
+[2] allocdlist = 0x2454558
 [2] allocdlist->length = 536
-[2] allocdlist->prevblk = 0x7cc340
+[2] allocdlist->prevblk = 0x2453340
 [2] allocdlist->nextblk = (nil)
 
 
-str[3] = heapAlloc(512) = 0x7cd788
+str[3] = heapAlloc(512) = 0x2454788
 
 
-[0] freelist = 0x7cd988
+[0] freelist = 0x2454988
 [0] freelist->length = 1656
 [0] freelist->prevblk = (nil)
 [0] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cd558
-[2] allocdlist = 0x7cd558
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454558
+[2] allocdlist = 0x2454558
 [2] allocdlist->length = 536
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7cd770
-[3] allocdlist = 0x7cd770
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454770
+[3] allocdlist = 0x2454770
 [3] allocdlist->length = 536
-[3] allocdlist->prevblk = 0x7cd558
+[3] allocdlist->prevblk = 0x2454558
 [3] allocdlist->nextblk = (nil)
 
 
-str[4] = heapAlloc(256) = 0x7cd9a0
+str[4] = heapAlloc(256) = 0x24549a0
 
 
-[0] freelist = 0x7cdaa0
+[0] freelist = 0x2454aa0
 [0] freelist->length = 1376
 [0] freelist->prevblk = (nil)
 [0] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cd558
-[2] allocdlist = 0x7cd558
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454558
+[2] allocdlist = 0x2454558
 [2] allocdlist->length = 536
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7cd770
-[3] allocdlist = 0x7cd770
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454770
+[3] allocdlist = 0x2454770
 [3] allocdlist->length = 536
-[3] allocdlist->prevblk = 0x7cd558
-[3] allocdlist->nextblk = 0x7cd988
-[4] allocdlist = 0x7cd988
+[3] allocdlist->prevblk = 0x2454558
+[3] allocdlist->nextblk = 0x2454988
+[4] allocdlist = 0x2454988
 [4] allocdlist->length = 280
-[4] allocdlist->prevblk = 0x7cd770
+[4] allocdlist->prevblk = 0x2454770
 [4] allocdlist->nextblk = (nil)
 
 
-str[5] = heapAlloc(512) = 0x7cdab8
+str[5] = heapAlloc(512) = 0x2454ab8
 
 
-[0] freelist = 0x7cdcb8
+[0] freelist = 0x2454cb8
 [0] freelist->length = 840
 [0] freelist->prevblk = (nil)
 [0] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cd558
-[2] allocdlist = 0x7cd558
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454558
+[2] allocdlist = 0x2454558
 [2] allocdlist->length = 536
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7cd770
-[3] allocdlist = 0x7cd770
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454770
+[3] allocdlist = 0x2454770
 [3] allocdlist->length = 536
-[3] allocdlist->prevblk = 0x7cd558
-[3] allocdlist->nextblk = 0x7cd988
-[4] allocdlist = 0x7cd988
+[3] allocdlist->prevblk = 0x2454558
+[3] allocdlist->nextblk = 0x2454988
+[4] allocdlist = 0x2454988
 [4] allocdlist->length = 280
-[4] allocdlist->prevblk = 0x7cd770
-[4] allocdlist->nextblk = 0x7cdaa0
-[5] allocdlist = 0x7cdaa0
+[4] allocdlist->prevblk = 0x2454770
+[4] allocdlist->nextblk = 0x2454aa0
+[5] allocdlist = 0x2454aa0
 [5] allocdlist->length = 536
-[5] allocdlist->prevblk = 0x7cd988
+[5] allocdlist->prevblk = 0x2454988
 [5] allocdlist->nextblk = (nil)
 
 
-str[6] = heapAlloc(128) = 0x7cdcd0
+str[6] = heapAlloc(128) = 0x2454cd0
 
 
-[0] freelist = 0x7cdd50
+[0] freelist = 0x2454d50
 [0] freelist->length = 688
 [0] freelist->prevblk = (nil)
 [0] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cd558
-[2] allocdlist = 0x7cd558
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454558
+[2] allocdlist = 0x2454558
 [2] allocdlist->length = 536
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7cd770
-[3] allocdlist = 0x7cd770
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454770
+[3] allocdlist = 0x2454770
 [3] allocdlist->length = 536
-[3] allocdlist->prevblk = 0x7cd558
-[3] allocdlist->nextblk = 0x7cd988
-[4] allocdlist = 0x7cd988
+[3] allocdlist->prevblk = 0x2454558
+[3] allocdlist->nextblk = 0x2454988
+[4] allocdlist = 0x2454988
 [4] allocdlist->length = 280
-[4] allocdlist->prevblk = 0x7cd770
-[4] allocdlist->nextblk = 0x7cdaa0
-[5] allocdlist = 0x7cdaa0
+[4] allocdlist->prevblk = 0x2454770
+[4] allocdlist->nextblk = 0x2454aa0
+[5] allocdlist = 0x2454aa0
 [5] allocdlist->length = 536
-[5] allocdlist->prevblk = 0x7cd988
-[5] allocdlist->nextblk = 0x7cdcb8
-[6] allocdlist = 0x7cdcb8
+[5] allocdlist->prevblk = 0x2454988
+[5] allocdlist->nextblk = 0x2454cb8
+[6] allocdlist = 0x2454cb8
 [6] allocdlist->length = 152
-[6] allocdlist->prevblk = 0x7cdaa0
+[6] allocdlist->prevblk = 0x2454aa0
 [6] allocdlist->nextblk = (nil)
 
 
-str[7] = heapAlloc(900) = 0x7cdd68
+str[7] = heapAlloc(900) = 0x2454d68
 
 
-[0] freelist = 0x7ce0ec
+[0] freelist = 0x24550ec
 [0] freelist->length = 3860
 [0] freelist->prevblk = (nil)
 [0] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cd558
-[2] allocdlist = 0x7cd558
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454558
+[2] allocdlist = 0x2454558
 [2] allocdlist->length = 536
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7cd770
-[3] allocdlist = 0x7cd770
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454770
+[3] allocdlist = 0x2454770
 [3] allocdlist->length = 536
-[3] allocdlist->prevblk = 0x7cd558
-[3] allocdlist->nextblk = 0x7cd988
-[4] allocdlist = 0x7cd988
+[3] allocdlist->prevblk = 0x2454558
+[3] allocdlist->nextblk = 0x2454988
+[4] allocdlist = 0x2454988
 [4] allocdlist->length = 280
-[4] allocdlist->prevblk = 0x7cd770
-[4] allocdlist->nextblk = 0x7cdaa0
-[5] allocdlist = 0x7cdaa0
+[4] allocdlist->prevblk = 0x2454770
+[4] allocdlist->nextblk = 0x2454aa0
+[5] allocdlist = 0x2454aa0
 [5] allocdlist->length = 536
-[5] allocdlist->prevblk = 0x7cd988
-[5] allocdlist->nextblk = 0x7cdcb8
-[6] allocdlist = 0x7cdcb8
+[5] allocdlist->prevblk = 0x2454988
+[5] allocdlist->nextblk = 0x2454cb8
+[6] allocdlist = 0x2454cb8
 [6] allocdlist->length = 152
-[6] allocdlist->prevblk = 0x7cdaa0
-[6] allocdlist->nextblk = 0x7cdd50
-[7] allocdlist = 0x7cdd50
+[6] allocdlist->prevblk = 0x2454aa0
+[6] allocdlist->nextblk = 0x2454d50
+[7] allocdlist = 0x2454d50
 [7] allocdlist->length = 924
-[7] allocdlist->prevblk = 0x7cdcb8
+[7] allocdlist->prevblk = 0x2454cb8
 [7] allocdlist->nextblk = (nil)
 
 
 heapFree(str[2])
 
 
-[0] freelist = 0x7ce0ec
+[0] freelist = 0x24550ec
 [0] freelist->length = 3860
 [0] freelist->prevblk = (nil)
-[0] freelist->nextblk = 0x7cd558
-[1] freelist = 0x7cd558
+[0] freelist->nextblk = 0x2454558
+[1] freelist = 0x2454558
 [1] freelist->length = 536
-[1] freelist->prevblk = 0x7ce0ec
+[1] freelist->prevblk = 0x24550ec
 [1] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cd770
-[2] allocdlist = 0x7cd770
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454770
+[2] allocdlist = 0x2454770
 [2] allocdlist->length = 536
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7cd988
-[3] allocdlist = 0x7cd988
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454988
+[3] allocdlist = 0x2454988
 [3] allocdlist->length = 280
-[3] allocdlist->prevblk = 0x7cd770
-[3] allocdlist->nextblk = 0x7cdaa0
-[4] allocdlist = 0x7cdaa0
+[3] allocdlist->prevblk = 0x2454770
+[3] allocdlist->nextblk = 0x2454aa0
+[4] allocdlist = 0x2454aa0
 [4] allocdlist->length = 536
-[4] allocdlist->prevblk = 0x7cd988
-[4] allocdlist->nextblk = 0x7cdcb8
-[5] allocdlist = 0x7cdcb8
+[4] allocdlist->prevblk = 0x2454988
+[4] allocdlist->nextblk = 0x2454cb8
+[5] allocdlist = 0x2454cb8
 [5] allocdlist->length = 152
-[5] allocdlist->prevblk = 0x7cdaa0
-[5] allocdlist->nextblk = 0x7cdd50
-[6] allocdlist = 0x7cdd50
+[5] allocdlist->prevblk = 0x2454aa0
+[5] allocdlist->nextblk = 0x2454d50
+[6] allocdlist = 0x2454d50
 [6] allocdlist->length = 924
-[6] allocdlist->prevblk = 0x7cdcb8
+[6] allocdlist->prevblk = 0x2454cb8
 [6] allocdlist->nextblk = (nil)
 
 
 heapFree(str[4])
 
 
-[0] freelist = 0x7ce0ec
+[0] freelist = 0x24550ec
 [0] freelist->length = 3860
 [0] freelist->prevblk = (nil)
-[0] freelist->nextblk = 0x7cd558
-[1] freelist = 0x7cd558
+[0] freelist->nextblk = 0x2454558
+[1] freelist = 0x2454558
 [1] freelist->length = 536
-[1] freelist->prevblk = 0x7ce0ec
-[1] freelist->nextblk = 0x7cd988
-[2] freelist = 0x7cd988
+[1] freelist->prevblk = 0x24550ec
+[1] freelist->nextblk = 0x2454988
+[2] freelist = 0x2454988
 [2] freelist->length = 280
-[2] freelist->prevblk = 0x7cd558
+[2] freelist->prevblk = 0x2454558
 [2] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cd770
-[2] allocdlist = 0x7cd770
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454770
+[2] allocdlist = 0x2454770
 [2] allocdlist->length = 536
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7cdaa0
-[3] allocdlist = 0x7cdaa0
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454aa0
+[3] allocdlist = 0x2454aa0
 [3] allocdlist->length = 536
-[3] allocdlist->prevblk = 0x7cd770
-[3] allocdlist->nextblk = 0x7cdcb8
-[4] allocdlist = 0x7cdcb8
+[3] allocdlist->prevblk = 0x2454770
+[3] allocdlist->nextblk = 0x2454cb8
+[4] allocdlist = 0x2454cb8
 [4] allocdlist->length = 152
-[4] allocdlist->prevblk = 0x7cdaa0
-[4] allocdlist->nextblk = 0x7cdd50
-[5] allocdlist = 0x7cdd50
+[4] allocdlist->prevblk = 0x2454aa0
+[4] allocdlist->nextblk = 0x2454d50
+[5] allocdlist = 0x2454d50
 [5] allocdlist->length = 924
-[5] allocdlist->prevblk = 0x7cdcb8
+[5] allocdlist->prevblk = 0x2454cb8
 [5] allocdlist->nextblk = (nil)
 
 
 heapFree(str[5])
 
 
-[0] freelist = 0x7ce0ec
+[0] freelist = 0x24550ec
 [0] freelist->length = 3860
 [0] freelist->prevblk = (nil)
-[0] freelist->nextblk = 0x7cd558
-[1] freelist = 0x7cd558
+[0] freelist->nextblk = 0x2454558
+[1] freelist = 0x2454558
 [1] freelist->length = 536
-[1] freelist->prevblk = 0x7ce0ec
-[1] freelist->nextblk = 0x7cd988
-[2] freelist = 0x7cd988
+[1] freelist->prevblk = 0x24550ec
+[1] freelist->nextblk = 0x2454988
+[2] freelist = 0x2454988
 [2] freelist->length = 816
-[2] freelist->prevblk = 0x7cd558
+[2] freelist->prevblk = 0x2454558
 [2] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cd770
-[2] allocdlist = 0x7cd770
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454770
+[2] allocdlist = 0x2454770
 [2] allocdlist->length = 536
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7cdcb8
-[3] allocdlist = 0x7cdcb8
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454cb8
+[3] allocdlist = 0x2454cb8
 [3] allocdlist->length = 152
-[3] allocdlist->prevblk = 0x7cd770
-[3] allocdlist->nextblk = 0x7cdd50
-[4] allocdlist = 0x7cdd50
+[3] allocdlist->prevblk = 0x2454770
+[3] allocdlist->nextblk = 0x2454d50
+[4] allocdlist = 0x2454d50
 [4] allocdlist->length = 924
-[4] allocdlist->prevblk = 0x7cdcb8
+[4] allocdlist->prevblk = 0x2454cb8
 [4] allocdlist->nextblk = (nil)
 
 
 heapFree(str[3])
 
 
-[0] freelist = 0x7ce0ec
+[0] freelist = 0x24550ec
 [0] freelist->length = 3860
 [0] freelist->prevblk = (nil)
-[0] freelist->nextblk = 0x7cd558
-[1] freelist = 0x7cd558
+[0] freelist->nextblk = 0x2454558
+[1] freelist = 0x2454558
 [1] freelist->length = 1072
-[1] freelist->prevblk = 0x7ce0ec
-[1] freelist->nextblk = 0x7cd988
-[2] freelist = 0x7cd988
+[1] freelist->prevblk = 0x24550ec
+[1] freelist->nextblk = 0x2454988
+[2] freelist = 0x2454988
 [2] freelist->length = 816
-[2] freelist->prevblk = 0x7cd558
+[2] freelist->prevblk = 0x2454558
 [2] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cdcb8
-[2] allocdlist = 0x7cdcb8
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454cb8
+[2] allocdlist = 0x2454cb8
 [2] allocdlist->length = 152
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7cdd50
-[3] allocdlist = 0x7cdd50
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454d50
+[3] allocdlist = 0x2454d50
 [3] allocdlist->length = 924
-[3] allocdlist->prevblk = 0x7cdcb8
+[3] allocdlist->prevblk = 0x2454cb8
 [3] allocdlist->nextblk = (nil)
 
 
 heapFree(str[6])
 
 
-[0] freelist = 0x7ce0ec
+[0] freelist = 0x24550ec
 [0] freelist->length = 3860
 [0] freelist->prevblk = (nil)
-[0] freelist->nextblk = 0x7cd558
-[1] freelist = 0x7cd558
+[0] freelist->nextblk = 0x2454558
+[1] freelist = 0x2454558
 [1] freelist->length = 1072
-[1] freelist->prevblk = 0x7ce0ec
-[1] freelist->nextblk = 0x7cd988
-[2] freelist = 0x7cd988
+[1] freelist->prevblk = 0x24550ec
+[1] freelist->nextblk = 0x2454988
+[2] freelist = 0x2454988
 [2] freelist->length = 968
-[2] freelist->prevblk = 0x7cd558
+[2] freelist->prevblk = 0x2454558
 [2] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cdd50
-[2] allocdlist = 0x7cdd50
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454d50
+[2] allocdlist = 0x2454d50
 [2] allocdlist->length = 924
-[2] allocdlist->prevblk = 0x7cc340
+[2] allocdlist->prevblk = 0x2453340
 [2] allocdlist->nextblk = (nil)
 
 
-str[8] = heapAlloc(3060) = 0x7ce104
+str[8] = heapAlloc(3060) = 0x2455104
 
 
-[0] freelist = 0x7cecf8
+[0] freelist = 0x2455cf8
 [0] freelist->length = 776
 [0] freelist->prevblk = (nil)
-[0] freelist->nextblk = 0x7cd558
-[1] freelist = 0x7cd558
+[0] freelist->nextblk = 0x2454558
+[1] freelist = 0x2454558
 [1] freelist->length = 1072
-[1] freelist->prevblk = 0x7cecf8
-[1] freelist->nextblk = 0x7cd988
-[2] freelist = 0x7cd988
+[1] freelist->prevblk = 0x2455cf8
+[1] freelist->nextblk = 0x2454988
+[2] freelist = 0x2454988
 [2] freelist->length = 968
-[2] freelist->prevblk = 0x7cd558
+[2] freelist->prevblk = 0x2454558
 [2] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cdd50
-[2] allocdlist = 0x7cdd50
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454d50
+[2] allocdlist = 0x2454d50
 [2] allocdlist->length = 924
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7ce0ec
-[3] allocdlist = 0x7ce0ec
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x24550ec
+[3] allocdlist = 0x24550ec
 [3] allocdlist->length = 3084
-[3] allocdlist->prevblk = 0x7cdd50
+[3] allocdlist->prevblk = 0x2454d50
 [3] allocdlist->nextblk = (nil)
 
 
-str[9] = heapAlloc(900) = 0x7cd570
+str[9] = heapAlloc(900) = 0x2454570
 
 
-[0] freelist = 0x7cecf8
+[0] freelist = 0x2455cf8
 [0] freelist->length = 776
 [0] freelist->prevblk = (nil)
-[0] freelist->nextblk = 0x7cd8f4
-[1] freelist = 0x7cd8f4
+[0] freelist->nextblk = 0x24548f4
+[1] freelist = 0x24548f4
 [1] freelist->length = 148
-[1] freelist->prevblk = 0x7cecf8
-[1] freelist->nextblk = 0x7cd988
-[2] freelist = 0x7cd988
+[1] freelist->prevblk = 0x2455cf8
+[1] freelist->nextblk = 0x2454988
+[2] freelist = 0x2454988
 [2] freelist->length = 968
-[2] freelist->prevblk = 0x7cd8f4
+[2] freelist->prevblk = 0x24548f4
 [2] freelist->nextblk = (nil)
 
-[0] allocdlist = 0x7ca000
+[0] allocdlist = 0x2451000
 [0] allocdlist->length = 9024
 [0] allocdlist->prevblk = (nil)
-[0] allocdlist->nextblk = 0x7cc340
-[1] allocdlist = 0x7cc340
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
 [1] allocdlist->length = 4632
-[1] allocdlist->prevblk = 0x7ca000
-[1] allocdlist->nextblk = 0x7cdd50
-[2] allocdlist = 0x7cdd50
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454d50
+[2] allocdlist = 0x2454d50
 [2] allocdlist->length = 924
-[2] allocdlist->prevblk = 0x7cc340
-[2] allocdlist->nextblk = 0x7ce0ec
-[3] allocdlist = 0x7ce0ec
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x24550ec
+[3] allocdlist = 0x24550ec
 [3] allocdlist->length = 3084
-[3] allocdlist->prevblk = 0x7cdd50
-[3] allocdlist->nextblk = 0x7cd558
-[4] allocdlist = 0x7cd558
+[3] allocdlist->prevblk = 0x2454d50
+[3] allocdlist->nextblk = 0x2454558
+[4] allocdlist = 0x2454558
 [4] allocdlist->length = 924
-[4] allocdlist->prevblk = 0x7ce0ec
+[4] allocdlist->prevblk = 0x24550ec
 [4] allocdlist->nextblk = (nil)
+
+
+heapFree(str[8])
+
+
+[0] freelist = 0x24550ec
+[0] freelist->length = 3860
+[0] freelist->prevblk = (nil)
+[0] freelist->nextblk = 0x24548f4
+[1] freelist = 0x24548f4
+[1] freelist->length = 148
+[1] freelist->prevblk = 0x24550ec
+[1] freelist->nextblk = 0x2454988
+[2] freelist = 0x2454988
+[2] freelist->length = 968
+[2] freelist->prevblk = 0x24548f4
+[2] freelist->nextblk = (nil)
+
+[0] allocdlist = 0x2451000
+[0] allocdlist->length = 9024
+[0] allocdlist->prevblk = (nil)
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
+[1] allocdlist->length = 4632
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454d50
+[2] allocdlist = 0x2454d50
+[2] allocdlist->length = 924
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454558
+[3] allocdlist = 0x2454558
+[3] allocdlist->length = 924
+[3] allocdlist->prevblk = 0x2454d50
+[3] allocdlist->nextblk = (nil)
+
+
+str[10] = heapAlloc(2030) = 0x2455104
+
+
+[0] freelist = 0x24558f2
+[0] freelist->length = 1806
+[0] freelist->prevblk = (nil)
+[0] freelist->nextblk = 0x24548f4
+[1] freelist = 0x24548f4
+[1] freelist->length = 148
+[1] freelist->prevblk = 0x24558f2
+[1] freelist->nextblk = 0x2454988
+[2] freelist = 0x2454988
+[2] freelist->length = 968
+[2] freelist->prevblk = 0x24548f4
+[2] freelist->nextblk = (nil)
+
+[0] allocdlist = 0x2451000
+[0] allocdlist->length = 9024
+[0] allocdlist->prevblk = (nil)
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
+[1] allocdlist->length = 4632
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454d50
+[2] allocdlist = 0x2454d50
+[2] allocdlist->length = 924
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x2454558
+[3] allocdlist = 0x2454558
+[3] allocdlist->length = 924
+[3] allocdlist->prevblk = 0x2454d50
+[3] allocdlist->nextblk = 0x24550ec
+[4] allocdlist = 0x24550ec
+[4] allocdlist->length = 2054
+[4] allocdlist->prevblk = 0x2454558
+[4] allocdlist->nextblk = (nil)
+
+
+heapFree(str[9])
+
+
+[0] freelist = 0x24558f2
+[0] freelist->length = 1806
+[0] freelist->prevblk = (nil)
+[0] freelist->nextblk = 0x2454558
+[1] freelist = 0x2454558
+[1] freelist->length = 1072
+[1] freelist->prevblk = 0x24558f2
+[1] freelist->nextblk = 0x2454988
+[2] freelist = 0x2454988
+[2] freelist->length = 968
+[2] freelist->prevblk = 0x2454558
+[2] freelist->nextblk = (nil)
+
+[0] allocdlist = 0x2451000
+[0] allocdlist->length = 9024
+[0] allocdlist->prevblk = (nil)
+[0] allocdlist->nextblk = 0x2453340
+[1] allocdlist = 0x2453340
+[1] allocdlist->length = 4632
+[1] allocdlist->prevblk = 0x2451000
+[1] allocdlist->nextblk = 0x2454d50
+[2] allocdlist = 0x2454d50
+[2] allocdlist->length = 924
+[2] allocdlist->prevblk = 0x2453340
+[2] allocdlist->nextblk = 0x24550ec
+[3] allocdlist = 0x24550ec
+[3] allocdlist->length = 2054
+[3] allocdlist->prevblk = 0x2454d50
+[3] allocdlist->nextblk = (nil)
+
+
