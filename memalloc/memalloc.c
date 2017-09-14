@@ -25,68 +25,106 @@
 #define ALLOC_LIST  1
 
 
-struct blk_header {
+struct blockheader {
   long int length;
-  struct blk_header *prevblk;
-  struct blk_header *nextblk;
+  struct blockheader *prevblk;
+  struct blockheader *nextblk;
 };
 
-static struct blk_header *allocdlist = NULL;
-static struct blk_header *freelist = NULL;
+static struct blockheader *allocdlist = NULL;
+static struct blockheader *freelist = NULL;
 
-static struct blk_header * searchAtList(size_t size, uint8_t whichlist)
+/* ----------------------------------------------------------------*/
+static struct blockheader * searchAtFreeList(size_t size)
 {
   if(freelist == NULL)
     return NULL;
-  else {
-    /* First-fit */
-    struct blk_header *currentblk = freelist;
 
-    while(currentblk != NULL) {
-      if(size <= currentblk->length)
-        return currentblk;
-      else
-        currentblk = currentblk->nextblk;
-    }
+  /* First-fit */
+  struct blockheader *currentblk = freelist;
+
+  while(currentblk != NULL) {
+    if(size <= currentblk->length)
+      return currentblk;
+    else
+      currentblk = currentblk->nextblk;
   }
   return NULL;
 }
 
-static void removeFromList(struct blk_header *newblk, size_t size, uint8_t whichlist)
+static struct blockheader * searchAtAllocdList(void *ptr)
 {
-  struct blk_header *headFL = freelist;
+  if(allocdlist == NULL)
+    return NULL;
 
-  while(freelist != newblk)
-    freelist = freelist->nextblk;
+  struct blockheader *currentblk = allocdlist;
 
-  if(freelist->length == size) {
-    if(freelist == headFL) {
-      freelist = freelist->nextblk;
+  while(currentblk != NULL) {
+    if((struct blockheader *) ((uint8_t *) ptr - sizeof(struct blockheader)) == currentblk)
+      return currentblk;
+    else
+      currentblk = currentblk->nextblk;
+  }
+  return NULL;
+}
+
+/* ----------------------------------------------------------------*/
+static void removeFromList(struct blockheader *addr, size_t size, uint8_t whichlist)
+{
+  struct blockheader **list;
+  struct blockheader *head;
+
+  if(whichlist == ALLOC_LIST)
+    list = &allocdlist;
+  if(whichlist == FREE_LIST)
+    list = &freelist;
+
+  head = *list;
+
+  while(*list != addr)
+    *list = (*list)->nextblk;
+
+  /* blocks from allocdlist will always enter this branch */
+  if((*list)->length == size) {
+    if(*list == head) {
+      *list = (*list)->nextblk;
+      (*list)->prevblk = NULL;
       return;
     }
 
-    if(freelist->prevblk != NULL)
-      (freelist->prevblk)->nextblk = freelist->nextblk;
-    if(freelist->nextblk != NULL)
-      (freelist->nextblk)->prevblk= freelist->prevblk;
+    if((*list)->prevblk != NULL)
+      ((*list)->prevblk)->nextblk = (*list)->nextblk;
+    if((*list)->nextblk != NULL)
+      ((*list)->nextblk)->prevblk= (*list)->prevblk;
 
-    freelist = NULL;
-    freelist = headFL;
+    *list = head;
   }
   else {
-    freelist = (struct blk_header *) ((uint8_t *) newblk + size);
-    freelist->length = newblk->length - size;
-    freelist->prevblk = newblk->prevblk;
-    freelist->nextblk = newblk->nextblk;
+    *list = (struct blockheader *) ((uint8_t *) addr + size);
+    (*list)->length = addr->length - size;
+    (*list)->prevblk = addr->prevblk;
+    (*list)->nextblk = addr->nextblk;
 
-    if(freelist != (struct blk_header *) ((uint8_t *) headFL + size))
-      freelist = headFL;
+    if((*list)->nextblk != NULL)
+      ((*list)->nextblk)->prevblk = *list;
+    if((*list)->prevblk != NULL)
+      ((*list)->prevblk)->nextblk = *list;
+
+    if(*list != (struct blockheader *) ((uint8_t *) head + size))
+    {
+      if(whichlist == ALLOC_LIST)
+        allocdlist = head;
+      if(whichlist == FREE_LIST)
+        freelist = head;
+    }
+
   }
 }
 
+/* ----------------------------------------------------------------*/
 static void addOnList(void *addr, size_t size, uint8_t whichlist)
 {
-  struct blk_header **list;
+  struct blockheader **list;
 
   if(whichlist == ALLOC_LIST)
     list = &allocdlist;
@@ -100,16 +138,21 @@ static void addOnList(void *addr, size_t size, uint8_t whichlist)
     (*list)->nextblk = NULL;
   }
   else {
-    struct blk_header *head = *list;
+    struct blockheader *head = *list;
 
-    while((*list)->nextblk != NULL)
-      *list = (*list)->nextblk;
-
-    /* This is to coalesce free areas */
-    if((uint8_t *) *list + (*list)->length == addr && whichlist == FREE_LIST) {
-      (*list)->length += size;
-      freelist = head;
-      return;
+    while(1) {
+      /* Coalescing freelist. It happens only when a free block is right after another one */
+      if(whichlist == FREE_LIST) {
+        if((uint8_t *) *list + (*list)->length == addr) {
+          (*list)->length += size;
+          freelist = head;
+          return;
+        }
+      }
+      if((*list)->nextblk != NULL)
+        *list = (*list)->nextblk;
+      else
+        break;
     }
 
     (*list)->nextblk = addr;
@@ -124,61 +167,166 @@ static void addOnList(void *addr, size_t size, uint8_t whichlist)
   }
 }
 
+/* ----------------------------------------------------------------*/
 void* heapAlloc(size_t size)
 {
-  long int bytes_to_alloc;
-  void *old_brk = NULL;
-  struct blk_header *new_blk;
+  long int bytesalloc;
+  void *oldbrk = NULL;
+  struct blockheader *newblk;
 
   if(!size)
     return NULL;
 
-  /* We need at least 24 bytes (sizeof(struct blk_header)) to store blk_header. */
-  if(size < sizeof(struct blk_header))
-    size = sizeof(struct blk_header);
+  /* We need at least 24 bytes (sizeof(struct blockheader)) to store blockheader. */
+  size += sizeof(struct blockheader);
 
-  new_blk = searchAtList(size, FREE_LIST);
-  while(new_blk == NULL) {
-    if(freelist == NULL)
-      bytes_to_alloc = (size/ALLOC_THRESHOLD + 1) * ALLOC_THRESHOLD;
-    else
-      bytes_to_alloc = (size/ALLOC_THRESHOLD) * ALLOC_THRESHOLD;
+  newblk = searchAtFreeList(size);
+  while(newblk == NULL)
+  {
+    bytesalloc = ALLOC_THRESHOLD;
 
-    old_brk = sbrk(bytes_to_alloc);
-    if(old_brk == (void *) -1)
+    oldbrk = sbrk(ALLOC_THRESHOLD);
+    if(oldbrk == (void *) -1)
       return NULL;
 
-    addOnList(old_brk, bytes_to_alloc, FREE_LIST);
-    new_blk = searchAtList(size, FREE_LIST);
+    addOnList(oldbrk, bytesalloc, FREE_LIST);
+    newblk = searchAtFreeList(size);
   }
-  removeFromList(new_blk, size, FREE_LIST);
-  addOnList(new_blk, size, ALLOC_LIST);
 
-  return new_blk;
+  removeFromList(newblk, size, FREE_LIST);
+  addOnList(newblk, size, ALLOC_LIST);
+
+  return newblk + 1;
 }
 
+/* ----------------------------------------------------------------*/
 void heapFree(void *ptr)
 {
+  struct blockheader *rmblk;
 
+  if(ptr == NULL)
+    return;
+
+  rmblk = searchAtAllocdList(ptr);
+  if(rmblk == NULL) {
+    fprintf(stderr, "ABORTING: Address %p is not currently allocated \n", ptr);
+    exit(EXIT_FAILURE);
+  }
+
+  removeFromList(rmblk, rmblk->length, ALLOC_LIST);
+  addOnList(rmblk, rmblk->length, FREE_LIST);
+}
+
+/* ----------------------------------------------------------------*/
+static void printList()
+{
+  struct blockheader *head = freelist;
+
+  int i = 0;
+  while(freelist != NULL) {
+    printf("[%d] freelist = %p\n", i, freelist);
+    printf("[%d] freelist->length = %ld\n", i, freelist->length);
+    printf("[%d] freelist->prevblk = %p\n", i, freelist->prevblk);
+    printf("[%d] freelist->nextblk = %p\n", i, freelist->nextblk);
+    freelist = freelist->nextblk;
+    i++;
+  }
+  freelist = head;
+  printf("\n");
+  head = allocdlist;
+  i = 0;
+  while(allocdlist != NULL) {
+    printf("[%d] allocdlist = %p\n", i, allocdlist);
+    printf("[%d] allocdlist->length = %ld\n", i, allocdlist->length);
+    printf("[%d] allocdlist->prevblk = %p\n", i, allocdlist->prevblk);
+    printf("[%d] allocdlist->nextblk = %p\n", i, allocdlist->nextblk);
+    allocdlist = allocdlist->nextblk;
+    i++;
+  }
+  allocdlist = head;
 }
 
 int main()
 {
-  char *str1, *str2, *str3;
+  char *str[128];
   printf("\n\n");
 
-  str1 = (char*) heapAlloc(4608);
-  printf("heapAlloc(4608) = %p\n", str1);
-  str1 = (char*) heapAlloc(4608);
-  printf("heapAlloc(4608) = %p\n", str1);
-  str2 = (char*) heapAlloc(512);
-  printf("heapAlloc(512) = %p\n", str2);
-  str3 = (char*) heapAlloc(512);
-  printf("heapAlloc(512) = %p\n", str3);
-  str3 = (char*) heapAlloc(256);
-  printf("heapAlloc(256) = %p\n", str3);
-
+  str[0] = (char*) heapAlloc(9000);
+  printf("str[0] = heapAlloc(9000) = %p\n", str[0]);
   printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[1] = (char*) heapAlloc(4608);
+  printf("str[1] = heapAlloc(4608) = %p\n", str[1]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[2] = (char*) heapAlloc(512);
+  printf("str[2] = heapAlloc(512) = %p\n", str[2]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[3] = (char*) heapAlloc(512);
+  printf("str[3] = heapAlloc(512) = %p\n", str[3]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[4] = (char*) heapAlloc(256);
+  printf("str[4] = heapAlloc(256) = %p\n", str[4]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[5] = (char*) heapAlloc(512);
+  printf("str[5] = heapAlloc(512) = %p\n", str[5]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[6] = (char*) heapAlloc(128);
+  printf("str[6] = heapAlloc(128) = %p\n", str[6]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[7] = (char*) heapAlloc(900);
+  printf("str[7] = heapAlloc(900) = %p\n", str[7]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  heapFree(str[2]);
+  printf("heapFree(str[2])\n");
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  heapFree(str[4]);
+  printf("heapFree(str[4])\n");
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  heapFree(str[5]);
+  printf("heapFree(str[5])\n");
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  heapFree(str[3]);
+  printf("heapFree(str[3])\n");
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  heapFree(str[6]);
+  printf("heapFree(str[6])\n");
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[8] = (char*) heapAlloc(3060);
+  printf("str[8] = heapAlloc(3060) = %p\n", str[8]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[9] = (char*) heapAlloc(900);
+  printf("str[9] = heapAlloc(900) = %p\n", str[9]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  /* Test working until here */
 
   return 0;
 }
