@@ -5,15 +5,7 @@
 
 /* This is not intended to be a complete malloc solution
  *
- * General informations:
- * The functions were named "heapAlloc" and "heapFree" so that they cannot be confused with complete malloc implementations
- * Program break will never descrease.
- * Heap is allocated/freed only in ALLOC_THRESHOLD chuncks.
- * 2 separated double-linked lists are created for the allocated and free blocks lists.
- * By now, the program behaves as the lists were single-linked lists.
- *
  * **** ON PROGRESS, but already functional ****
- *
  */
 
 #include <stdlib.h>
