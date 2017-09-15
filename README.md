@@ -1,4 +1,4 @@
-# The Linux Programming Interface, Michael Kerrisk, 2011 - Book exercises
+# The Linux Programming Interface, 2010 - Book exercises
 This repository contains programs implemented as part of "The Linux Programming Interface" book's exercises resolution.
 
 The subdirectories structure follows the same layout as the book's source code:
