@@ -255,7 +255,7 @@ static void printList()
     i++;
   }
   allocdlist = head;
-}*/
+}
 
 /* --------------------------------------------------------------------------------------------- */
 int main()
@@ -350,6 +350,26 @@ int main()
   printf("\n\n");
   heapFree(str[9]);
   printf("heapFree(str[9])\n");
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  heapFree(str[0]);
+  printf("heapFree(str[0])\n");
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[0] = (char*) heapAlloc(1090);
+  printf("str[0] = heapAlloc(1090) = %p\n", str[0]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  str[5] = (char*) heapAlloc(5400);
+  printf("str[5] = heapAlloc(5400) = %p\n", str[5]);
+  printf("\n\n");
+  printList();
+  printf("\n\n");
+  heapFree(str[7]);
+  printf("heapFree(str[7])\n");
   printf("\n\n");
   printList();
   printf("\n\n");
