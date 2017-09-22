@@ -5,7 +5,6 @@
 
 /* This is not intended to be a complete malloc solution
  *
- * **** ON PROGRESS, but already functional ****
  */
 
 #include <stdlib.h>
@@ -101,14 +100,18 @@ static void removeFromList(struct blockheader *addr, size_t size, uint8_t whichl
 
     if((*list)->nextblk != NULL)
       ((*list)->nextblk)->prevblk = *list;
-    if((*list)->prevblk != NULL) {
+    if((*list)->prevblk != NULL) { /* i.e. it is not the head of the list */
       ((*list)->prevblk)->nextblk = *list;
       *list = head; /* the list must have the head adjusted since we alter the lists by reference */
     }
   }
 }
 
+
 /* ---------------------------------------------------------------------------------------------*/
+/* The logic keeps the freelist always ordered.
+ * This eases coalescing and, thus, descreases fragmentation.
+ */
 static void addOnList(void *addr, size_t size, uint8_t whichlist)
 {
   struct blockheader **list;
@@ -131,43 +134,60 @@ static void addOnList(void *addr, size_t size, uint8_t whichlist)
   {
     while(1)
     {
-      if(whichlist == FREE_LIST)
-      {
-        /* If the block freed can be coalesced wether to previous or next block */
-        if((uint8_t *) *list + (*list)->length == addr) {
+      if(whichlist == FREE_LIST) {
+        if((uint8_t *) (*list) + (*list)->length == addr) {
           (*list)->length += size;
-          freelist = head;
-          return;
-        }
-        else if((uint8_t *) *list - size /*addr->length*/ == addr)
-        {
-          ((struct blockheader *) addr)->length += (*list)->length;
-          ((struct blockheader *) addr)->nextblk = (*list)->nextblk;
-          ((struct blockheader *) addr)->prevblk = (*list)->prevblk;
-          *list = addr;
-
-          if((*list)->nextblk != NULL)
-            ((*list)->nextblk)->prevblk = *list;
-          if((*list)->prevblk != NULL) {
-            ((*list)->prevblk)->nextblk = *list;
-            freelist = head;
-          }
+          *list = head;
           return;
         }
       }
+
+      if(*list > (struct blockheader *) addr)
+        break;
+
       if((*list)->nextblk != NULL)
         *list = (*list)->nextblk;
       else
         break;
     }
 
-    (*list)->nextblk = addr;
-    ((*list)->nextblk)->length = size;
-    ((*list)->nextblk)->prevblk = *list;
-    ((*list)->nextblk)->nextblk = NULL;
+    if(*list == head) {
+      (*list)->prevblk = addr;
+      ((*list)->prevblk)->length = size;
+      ((*list)->prevblk)->nextblk = *list;
+      ((*list)->prevblk)->prevblk = NULL;
+      head = (*list)->prevblk;
+    }
+    else {
+      ((struct blockheader *) addr)->length = size;
+      ((struct blockheader *) addr)->nextblk = *list;
+      ((struct blockheader *) addr)->prevblk = (*list)->prevblk;
+      ((*list)->prevblk)->nextblk = addr;
+      (*list)->prevblk = addr;
+    }
 
     *list = head;
   }
+}
+
+/* ---------------------------------------------------------------------------------------------*/
+static void coalesceBlocks()
+{
+  struct blockheader *head = freelist;
+
+  while(freelist->nextblk != NULL)
+  {
+    if((uint8_t *) freelist + freelist->length == (uint8_t *) freelist->nextblk) {
+      freelist->length += (freelist->nextblk)->length;
+      freelist->nextblk = (freelist->nextblk)->nextblk;
+      if(freelist->nextblk != NULL)
+        (freelist->nextblk)->prevblk = freelist;
+    }
+    else
+      freelist = freelist->nextblk;
+  }
+
+  freelist = head;
 }
 
 /* ---------------------------------------------------------------------------------------------*/
@@ -218,6 +238,7 @@ void heapFree(void *ptr)
 
   removeFromList(rmblk, rmblk->length, ALLOC_LIST);
   addOnList(rmblk, rmblk->length, FREE_LIST);
+  coalesceBlocks();
 }
 
 /* ---------------------------------------------------------------------------------------------*/
