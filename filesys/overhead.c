@@ -11,7 +11,62 @@
  * If so, what do you think the reason(s) might be? Again, do the results vary across file-system types?
  */
 
+#include <sys/time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
+#define MAX_PATH_SIZE 200
+
+char* gen_number()
+{
+   int count, randnum;
+   char* retstr = (char*) malloc(6);
+
+   for(count = 0; count < 6; count++) {
+      randnum = rand() % 10;
+      sprintf(&retstr[count], "%d", randnum);
+   }
+
+   return retstr;
+}
+
 int main(int argc, char** argv)
 {
+   struct timeval start, end;
+   int count, nf, fd;
+   char* path_to_dir = (char*) malloc(MAX_PATH_SIZE + 1);
+   char* filename = (char*) malloc(8);
 
+   if(argc != 3) {
+      printf("Usage: path/to/program number_of_files directory\n");
+      exit(-1);
+   }
+   if(strlen(argv[2]) > MAX_PATH_SIZE) {
+      printf("Path to directory has exceeded %d characters. Aborting\n", MAX_PATH_SIZE);
+      exit(-1);
+   }
+
+   nf = atoi(argv[1]);
+   strcpy(path_to_dir, argv[2]);
+  
+   chdir(path_to_dir);
+
+   srand(time(NULL));   
+
+   for(count = 0; count < nf; count++) {
+      filename[0] = 'x';
+      strcat(filename, (const char *) gen_number());
+      
+      fd = open(filename, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
+      write(fd, filename, 1);
+      close(fd);
+
+      memset(filename, 0, 8);
+   }
 }
