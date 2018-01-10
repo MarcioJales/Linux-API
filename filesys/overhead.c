@@ -59,6 +59,9 @@ int main(int argc, char** argv)
 
    srand(time(NULL));   
 
+   gettimeofday(&start, NULL);  
+
+   // Loop to assign the file names and open them
    for(count = 0; count < nf; count++) {
       filename[0] = 'x';
       strcat(filename, (const char *) gen_number());
@@ -69,4 +72,7 @@ int main(int argc, char** argv)
 
       memset(filename, 0, 8);
    }
+
+   gettimeofday(&end, NULL);
+   printf("Time to create = %f seconds\n", (double)end.tv_sec + (double)end.tv_usec/1000000 - (double)start.tv_sec - (double)start.tv_usec/1000000);
 }
