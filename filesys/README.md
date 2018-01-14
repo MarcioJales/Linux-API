@@ -6,7 +6,7 @@
 
 *Incomplete.*
 
-Currently creating files with random 6-digit numbers and deleting them in increasing sequencial order
+Currently creating files with random 6-digit numbers and deleting them in increasing sequential order
 
 Tests done in a VPS from Digital Ocean, running Ubuntu server 16.04.3, 512 MB memory/20 GB disk + 10 GB, 1 CPU.
 
