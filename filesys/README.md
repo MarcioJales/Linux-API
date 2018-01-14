@@ -6,6 +6,8 @@
 
 *Incomplete.*
 
+Currently creating files with random 6-digit numbers and deleting them in increasing sequencial order
+
 Tests done in a VPS from Digital Ocean, running Ubuntu server 16.04.3, 512 MB memory/20 GB disk + 10 GB, 1 CPU.
 
 First, the 20 GB disk has EXT4 on top, while the 10 GB volume has VFAT:
