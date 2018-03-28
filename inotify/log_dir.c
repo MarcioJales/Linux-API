@@ -9,7 +9,7 @@
  * monitored subdirectories should be updated accordingly.
  */
 
-  /* IN PROGRESS */ 
+  /* IN PROGRESS */
 
  #include <sys/inotify.h>
  #include <limits.h>
@@ -26,17 +26,23 @@
  #define MAX_USER_WATCHES 8192
  #define BUF_LEN (12 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
+ int instance_fd, watch_fd[MAX_USER_WATCHES];
+ int wfd_count = 0;
+
  int addWatch(const char *pathname, const struct stat *file_info, int type, struct FTW *sftw)
  {
-   printf("%s\n", pathname);
+   if(type == FTW_D) {
+     watch_fd[wfd_count] = inotify_add_watch(instance_fd, pathname, IN_ALL_EVENTS);
+     printf("Watch [wfd = %d] added to %s\n", watch_fd[wfd_count], pathname);
+     wfd_count++;
+   }
+
    return 0;
  }
 
  int main(int argc, char **argv)
  {
-   int instance_fd, watch_fd[MAX_USER_WATCHES];
    char buffer[BUF_LEN];
-   int wfd_count = 0;
 
    if(argc < 2) {
      fprintf(stderr, "Usage: %s <directory>\n", argv[0]);
