@@ -23,11 +23,12 @@
  #define BUF_LEN (12 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
  int instance_fd, watch_fd;
+ int flags = IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MOVE | IN_MOVE_SELF;
 
  int addWatch(const char *pathname, const struct stat *file_info, int type, struct FTW *sftw)
  {
    if(type == FTW_D) {
-     watch_fd = inotify_add_watch(instance_fd, pathname, IN_CREATE | IN_DELETE | IN_MOVE);
+     watch_fd = inotify_add_watch(instance_fd, pathname, flags);
      printf("Watch [wfd = %d] added to %s\n", watch_fd, pathname);
    }
 
@@ -41,20 +42,12 @@
          printf("cookie = %4d; ", ievent->cookie);
 
      printf("mask = ");
-     if (ievent->mask & IN_ACCESS)        printf("IN_ACCESS ");
-     if (ievent->mask & IN_ATTRIB)        printf("IN_ATTRIB ");
-     if (ievent->mask & IN_CLOSE_NOWRITE) printf("IN_CLOSE_NOWRITE ");
-     if (ievent->mask & IN_CLOSE_WRITE)   printf("IN_CLOSE_WRITE ");
      if (ievent->mask & IN_DELETE)        printf("IN_DELETE ");
      if (ievent->mask & IN_IGNORED)       printf("IN_IGNORED ");
      if (ievent->mask & IN_ISDIR)         printf("IN_ISDIR ");
-     if (ievent->mask & IN_MODIFY)        printf("IN_MODIFY ");
      if (ievent->mask & IN_MOVE_SELF)     printf("IN_MOVE_SELF ");
      if (ievent->mask & IN_MOVED_FROM)    printf("IN_MOVED_FROM ");
      if (ievent->mask & IN_MOVED_TO)      printf("IN_MOVED_TO ");
-     if (ievent->mask & IN_OPEN)          printf("IN_OPEN ");
-     if (ievent->mask & IN_Q_OVERFLOW)    printf("IN_Q_OVERFLOW ");
-     if (ievent->mask & IN_UNMOUNT)       printf("IN_UNMOUNT ");
      if (ievent->mask & IN_DELETE_SELF)   printf("IN_DELETE_SELF ");
      if (ievent->mask & IN_CREATE) {
        printf("IN_CREATE ");
