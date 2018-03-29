@@ -9,8 +9,6 @@
  * monitored subdirectories should be updated accordingly.
  */
 
-  /* IN PROGRESS */
-
  #include <sys/inotify.h>
  #include <limits.h>
  #include <stdlib.h>
@@ -23,10 +21,12 @@
  #define BUF_LEN (12 * (sizeof(struct inotify_event) + NAME_MAX + 1))
 
  int instance_fd, watch_fd;
- int flags = IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MOVE | IN_MOVE_SELF;
+ char *dirpath;
 
  int addWatch(const char *pathname, const struct stat *file_info, int type, struct FTW *sftw)
  {
+   int flags = IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_MOVE | IN_MOVE_SELF;
+
    if(type == FTW_D) {
      watch_fd = inotify_add_watch(instance_fd, pathname, flags);
      printf("Watch [wfd = %d] added to %s\n", watch_fd, pathname);
@@ -49,14 +49,19 @@
      if (ievent->mask & IN_MOVED_FROM)    printf("IN_MOVED_FROM ");
      if (ievent->mask & IN_MOVED_TO)      printf("IN_MOVED_TO ");
      if (ievent->mask & IN_DELETE_SELF)   printf("IN_DELETE_SELF ");
-     if (ievent->mask & IN_CREATE) {
-       printf("IN_CREATE ");
-       /* Need to add watch if a directory */
-     }
+     if (ievent->mask & IN_CREATE)        printf("IN_CREATE ");
+
      printf("\n");
 
      if (ievent->len > 0)
-         printf("        name = %s\n", ievent->name);
+       printf("        name = %s\n", ievent->name);
+
+     if ((ievent->mask & IN_CREATE) && (ievent->mask & IN_ISDIR)) {
+       if(nftw(dirpath, addWatch, 10, 0) == -1) {
+         fprintf(stderr, "Error (nftw): %s\n", strerror(errno));
+         exit(EXIT_FAILURE);
+       }
+     }
  }
 
  int main(int argc, char **argv)
@@ -71,13 +76,15 @@
      exit(EXIT_FAILURE);
    }
 
+   dirpath = argv[1];
+
    instance_fd = inotify_init();
    if(instance_fd == -1) {
      fprintf(stderr, "Error (inotify_init): %s\n", strerror(errno));
      exit(EXIT_FAILURE);
    }
 
-   if(nftw(argv[1], addWatch, 10, 0) == -1) {
+   if(nftw(dirpath, addWatch, 10, 0) == -1) {
      fprintf(stderr, "Error (nftw): %s\n", strerror(errno));
      exit(EXIT_FAILURE);
    }
