@@ -5,7 +5,7 @@
    "A Client-Server Application Using FIFOs" using UNIX domain stream sockets.
 */
 
-#include "fifo_seqnum.h"
+#include "sockets_seqnum.h"
 
 static char clientFifo[CLIENT_FIFO_NAME_LEN];
 

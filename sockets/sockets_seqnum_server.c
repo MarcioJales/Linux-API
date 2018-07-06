@@ -5,7 +5,7 @@
    "A Client-Server Application Using FIFOs" using UNIX domain stream sockets.
 */
 
-#include "fifo_seqnum.h"
+#include "sockets_seqnum.h"
 
 int
 main(int argc, char *argv[])
@@ -45,24 +45,25 @@ main(int argc, char *argv[])
   }
 
   /* Read requests and send responses */
-  for (;;) {
-
+  for (;;)
+  {
     clientFd = accept(serverFd, (struct sockaddr *) &clientAddr, sizeof(struct sockaddr_un));
     if(clientFd == -1) {
       fprintf(stderr, "Error accepting connection\n");
       exit(EXIT_FAILURE);
     }
+    /* Either partial read or error */
     if (read(clientFd, &req, sizeof(struct request)) != sizeof(struct request)) {
       fprintf(stderr, "Error reading request; discarding\n");
-      continue;                   /* Either partial read or error */
+      continue;
     }
 
-    /* Send response and close FIFO */
+    /* Send response and close socket */
     resp.seqNum = seqNum;
     if (write(clientFd, &resp, sizeof(struct response)) != sizeof(struct response))
-      fprintf(stderr, "Error writing to FIFO %s\n", clientAddr.sun_path);
+      fprintf(stderr, "Error writing to socket %s\n", clientAddr.sun_path);
     if (close(clientFd) == -1)
-      errMsg("close");
+      fprintf(stderr, "Error closing socket %s\n", clientAddr.sun_path);
 
     seqNum += req.seqLen;           /* Update our sequence number */
   }
