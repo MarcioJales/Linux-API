@@ -9,13 +9,12 @@
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #define SERVER_SOCKET "/tmp/seqnum_sv" /* Well-known name for server's FIFO */
-
-#define CLIENT_SOCKET_TEMPLATE "/tmp/seqnum_cl.%ld" /* Template for building client FIFO name */
-
-/* Space required for client FIFO pathname (+20 as a generous allowance for the PID) */
-#define CLIENT_SOCKET_NAME_LEN (sizeof(CLIENT_SOCKET_TEMPLATE) + 20)
 
 #define BACKLOG 5
 

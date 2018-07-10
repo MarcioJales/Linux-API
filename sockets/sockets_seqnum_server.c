@@ -3,7 +3,7 @@
 
    Reimplement the sequence-number server and client of
    "A Client-Server Application Using FIFOs" using UNIX domain stream sockets.
-*/
+  */
 
 #include "sockets_seqnum.h"
 
@@ -12,12 +12,13 @@ main(int argc, char *argv[])
 {
   int serverFd, clientFd;
   struct sockaddr_un serverAddr, clientAddr;
+  socklen_t serverAddrSize = sizeof(struct sockaddr_un);
   struct request req;
   struct response resp;
-  int seqNum = 0;                     /* This is our "service" */
+  int seqNum = 0; /* This is our "service" */
 
 
-  umask(0);                           /* So we get the permissions we want */
+  umask(0); /* So we get the permissions we want */
   serverFd = socket(AF_UNIX, SOCK_STREAM, 0);
   if (serverFd == -1) {
     fprintf(stderr, "Error when creating socket\n");
@@ -47,10 +48,10 @@ main(int argc, char *argv[])
   /* Read requests and send responses */
   for (;;)
   {
-    clientFd = accept(serverFd, (struct sockaddr *) &clientAddr, sizeof(struct sockaddr_un));
+    clientFd = accept(serverFd, (struct sockaddr *) &clientAddr, &serverAddrSize);
     if(clientFd == -1) {
-      fprintf(stderr, "Error accepting connection\n");
-      exit(EXIT_FAILURE);
+      fprintf(stderr, "Error accepting connection from %s\n", clientAddr.sun_path);
+      continue;
     }
     /* Either partial read or error */
     if (read(clientFd, &req, sizeof(struct request)) != sizeof(struct request)) {

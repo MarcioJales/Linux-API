@@ -7,58 +7,50 @@
 
 #include "sockets_seqnum.h"
 
-static char clientFifo[CLIENT_FIFO_NAME_LEN];
-
-static void             /* Invoked on exit to delete client FIFO */
-removeFifo(void)
-{
-    unlink(clientFifo);
-}
-
 int
 main(int argc, char *argv[])
 {
-    int serverFd, clientFd;
+    int clientFd;
+    struct sockaddr_un serverAddr;
     struct request req;
     struct response resp;
 
-    if (argc > 1 && strcmp(argv[1], "--help") == 0)
-        usageErr("%s [seq-len...]\n", argv[0]);
+    if (argc > 1 && strcmp(argv[1], "--help") == 0) {
+      fprintf(stderr, "Usage: %s [seq-len...]\n", argv[0]);
+      exit(EXIT_FAILURE);
+    }
 
-    /* Create our FIFO (before sending request, to avoid a race) */
+    /* Create our socket */
+    clientFd = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (clientFd == -1) {
+      fprintf(stderr, "Error when creating socket\n");
+      exit(EXIT_FAILURE);
+    }
 
-    umask(0);                   /* So we get the permissions we want */
-    snprintf(clientFifo, CLIENT_FIFO_NAME_LEN, CLIENT_FIFO_TEMPLATE,
-            (long) getpid());
-    if (mkfifo(clientFifo, S_IRUSR | S_IWUSR | S_IWGRP) == -1
-                && errno != EEXIST)
-        errExit("mkfifo %s", clientFifo);
+    /* Get server address */
+    memset(&serverAddr, 0, sizeof(struct sockaddr_un));
+    serverAddr.sun_family = AF_UNIX;
+    strncpy(serverAddr.sun_path, SERVER_SOCKET, sizeof(serverAddr.sun_path) - 1);
 
-    if (atexit(removeFifo) != 0)
-        errExit("atexit");
+    /* Connecting to it */
+    if(connect(clientFd, (struct sockaddr *) &serverAddr, sizeof(struct sockaddr_un)) == -1) {
+      fprintf(stderr, "Error when trying connect to server\n");
+      exit(EXIT_FAILURE);
+    }
 
-    /* Construct request message, open server FIFO, and send message */
-
+    /* Construct request message and send message */
     req.pid = getpid();
-    req.seqLen = (argc > 1) ? getInt(argv[1], GN_GT_0, "seq-len") : 1;
+    req.seqLen = (argc > 1) ? strtol(argv[1], NULL, 10) : 1;
+    if (write(clientFd, &req, sizeof(struct request)) != sizeof(struct request)) {
+      fprintf(stderr, "Can't write to server %s\n", SERVER_SOCKET);
+      exit(EXIT_FAILURE);
+    }
 
-    serverFd = open(SERVER_FIFO, O_WRONLY);
-    if (serverFd == -1)
-        errExit("open %s", SERVER_FIFO);
-
-    if (write(serverFd, &req, sizeof(struct request)) !=
-            sizeof(struct request))
-        fatal("Can't write to server");
-
-    /* Open our FIFO, read and display response */
-
-    clientFd = open(clientFifo, O_RDONLY);
-    if (clientFd == -1)
-        errExit("open %s", clientFifo);
-
-    if (read(clientFd, &resp, sizeof(struct response))
-            != sizeof(struct response))
-        fatal("Can't read response from server");
+    /* Read and display response */
+    if (read(clientFd, &resp, sizeof(struct response)) != sizeof(struct response)) {
+      fprintf(stderr, "Can't read response from server %s\n", SERVER_SOCKET);
+      exit(EXIT_FAILURE);
+    }
 
     printf("%d\n", resp.seqNum);
     exit(EXIT_SUCCESS);
