@@ -49,39 +49,3 @@ int main(int argc, char **argv)
 
   return 0;
 }
-
-/* According to the "pthread_join" manual:
-
-   EDEADLK
-             A deadlock was detected (e.g., two threads tried to join with each other); or thread specifies the calling thread.
-
-   As we've checked on the code, the return value was a deadlock
-
-   To avoid this behavior, we need to assert the aforementioned tid value and pthread_self(), using pthread_equal()
-*/
-
- /* BONUS: Chapter 29, Exercise 2
-
-    Aside from the absence of error checking and various variable and structure declarations, what is the problem with the following program?
-
-    static void *threadFunc(void *arg)
-    {
-        struct someStruct *pbuf = (struct someStruct *) arg;
-
-        // Do some work with structure pointed to by 'pbuf'
-    }
-    int main(int argc, char *argv[])
-    {
-        struct someStruct buf;
-        pthread_create(&thr, NULL, threadFunc, (void *) &buf);
-
-        pthread_exit(NULL);
-    }
-
-********************************************************************************
-
-    According to the book, "typically, arg points to a global or heap variable".
-
-    Since "buf" is on the main thread's stack, its value can become undefined if the main threads exits while the other thread executes.
-
-*/
