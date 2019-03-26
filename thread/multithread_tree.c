@@ -13,6 +13,13 @@
 
 #include <pthread.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#ifdef DEBUG
+#define DEBUG 1
+#else
+#define DEBUG 0
+#endif
 
 #define NOTFOUND  0
 #define FOUND     1
@@ -53,8 +60,10 @@ int main(int argc, char **argv)
 {
   short numThreads = 1;
 
-  if(argc == 2) {
-    numThreads = (short) argv[1];
-  }
-  printf("%d\n", numThreads);
+  if(argc == 2)
+    numThreads = (short) atoi(argv[1]);
+
+  if(DEBUG)
+    printf("Threads to create: %d\n", numThreads);
+
 }
