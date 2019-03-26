@@ -47,6 +47,14 @@ void initialize(tree *t)
   t->right = NULL;
   (t->kv).key = 0;
   (t->kv).value = 88;
+
+  /*
+    Book quoting:
+
+    Among the cases where we must use pthread_mutex_init() rather than a static initializer are the following:
+
+    - The mutex was dynamically allocated on the heap. For example, suppose that we create a dynamically allocated linked list of structures, and each structure in the list includes a pthread_mutex_t field that holds a mutex that is used to protect access to that structure.
+  */
   if(err = pthread_mutex_init(&(t->kv).mtx, NULL)) {
     fprintf(stderr, "(err = %d) Failed to initialize mutex. Exiting...\n", err);
     exit(EXIT_FAILURE);
