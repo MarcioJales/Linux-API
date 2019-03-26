@@ -2,7 +2,7 @@
 | ---- | ---------- |
 | join_itself.c | Exercise 1 from chapter 29 |
 
-## Ex 1.
+## Ch 29, Ex 1.
 
 According to the "pthread_join" manual:
 
@@ -15,7 +15,7 @@ As we've checked on the code, the return value was a deadlock
 
 To avoid this behavior, we need to assert the aforementioned tid value and pthread_self(), using pthread_equal().
 
-## Ex 2.
+## Ch 29, Ex 2.
 
 **Statement**:
 
@@ -44,3 +44,5 @@ int main(int argc, char *argv[])
 According to the book: *"typically, arg points to a global or heap variable".*
 
 Since `buf` is on the main thread's stack, its value can become undefined if the main threads exits while the other thread executes.
+
+## Ch 30, Ex 2
