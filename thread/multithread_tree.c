@@ -24,22 +24,22 @@ typedef struct keyPair {
 } element;
 
 typedef struct binaryTree {
-  tree *left;
-  tree *right;
+  struct binaryTree *left;
+  struct binaryTree *right;
   element kv;
 } tree;
 
-void initialize(tree)
+void initialize(tree t)
 {
 
 };
 
-void add(tree, char *key, void *value)
+void add(tree t, char *key, void *value)
 {
 
 };
 
-void delete(tree, char *key)
+void delete(tree t, char *key)
 {
 
 };
