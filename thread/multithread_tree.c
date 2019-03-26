@@ -11,7 +11,7 @@
  *
  */
 
-#include <pthread.c>
+#include <pthread.h>
 #include <stdio.h>
 
 #define NOTFOUND  0
