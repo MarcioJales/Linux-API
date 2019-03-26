@@ -36,17 +36,32 @@ typedef struct binaryTree {
   element kv;
 } tree;
 
-void initialize(tree t)
+void initialize(tree *t)
+{
+  int err;
+
+  if(DEBUG)
+    printf("Initializing tree (key = 0)...\n");
+
+  t->left = NULL;
+  t->right = NULL;
+  (t->kv).key = 0;
+  (t->kv).value = 88;
+  if(err = pthread_mutex_init(&(t->kv).mtx, NULL)) {
+    fprintf(stderr, "(err = %d) Failed to initialize mutex. Exiting...\n", err);
+    exit(EXIT_FAILURE);
+  }
+
+  if(DEBUG)
+    printf("Sucessfully initialized the tree.\n");
+};
+
+void add(tree *t, char *key, void *value)
 {
 
 };
 
-void add(tree t, char *key, void *value)
-{
-
-};
-
-void delete(tree t, char *key)
+void delete(tree *t, char *key)
 {
 
 };
@@ -59,11 +74,14 @@ char lookup(char *key, void **value)
 int main(int argc, char **argv)
 {
   short numThreads = 1;
+  tree *root = (tree *) malloc(sizeof(tree));
 
   if(argc == 2)
     numThreads = (short) atoi(argv[1]);
 
   if(DEBUG)
     printf("Threads to create: %d\n", numThreads);
+
+  initialize(root);
 
 }
