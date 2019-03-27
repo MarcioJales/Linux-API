@@ -21,6 +21,12 @@
 #define DEBUG 0
 #endif
 
+#ifdef VERBOSE
+#define VERBOSE 1
+#else
+#define VERBOSE 0
+#endif
+
 #define NOTFOUND  0
 #define FOUND     1
 
@@ -38,7 +44,7 @@ typedef struct binaryTree {
 
 void initialize(tree *t)
 {
-  int err;
+  int ret;
 
   if(DEBUG)
     printf("Initializing tree (key = 0)...\n");
@@ -48,15 +54,14 @@ void initialize(tree *t)
   (t->kv).key = 0;
   (t->kv).value = 88;
 
-  /*
-    Book quoting:
+  /*  Book quoting:
 
-    Among the cases where we must use pthread_mutex_init() rather than a static initializer are the following:
+      Among the cases where we must use pthread_mutex_init() rather than a static initializer are the following:
 
-    - The mutex was dynamically allocated on the heap. For example, suppose that we create a dynamically allocated linked list of structures, and each structure in the list includes a pthread_mutex_t field that holds a mutex that is used to protect access to that structure.
+      - The mutex was dynamically allocated on the heap. For example, suppose that we create a dynamically allocated linked list of structures, and each structure in the list includes a pthread_mutex_t field that holds a mutex that is used to protect access to that structure.
   */
-  if(err = pthread_mutex_init(&(t->kv).mtx, NULL)) {
-    fprintf(stderr, "(err = %d) Failed to initialize mutex. Exiting...\n", err);
+  if(ret = pthread_mutex_init(&(t->kv).mtx, NULL)) {
+    fprintf(stderr, "(err = %d) Failed to initialize mutex. Exiting...\n", ret);
     exit(EXIT_FAILURE);
   }
 
@@ -79,17 +84,43 @@ char lookup(char *key, void **value)
 
 };
 
+void * operate(void *arg)
+{
+  return NULL;
+};
+
 int main(int argc, char **argv)
 {
   short numThreads = 1;
+  int idx, ret;
+  pthread_t *thread;
   tree *root = (tree *) malloc(sizeof(tree));
 
   if(argc == 2)
     numThreads = (short) atoi(argv[1]);
 
-  if(DEBUG)
-    printf("Threads to create: %d\n", numThreads);
+  thread = (pthread_t *) malloc(numThreads * sizeof(pthread_t));
 
   initialize(root);
 
+  if(DEBUG)
+    printf("Threads to create: %d\n", numThreads);
+
+  for (idx = 0; idx < numThreads; idx++) {
+    ret = pthread_create(&thread[idx], NULL, operate, NULL);
+    if (ret != 0) {
+      fprintf(stderr, "(err = %d) Failed to create thread %d. Exiting...\n", ret, idx);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  for (idx = 0; idx < numThreads; idx++) {
+    ret = pthread_join(thread[idx], NULL);
+    if (ret != 0) {
+      fprintf(stderr, "(err = %d) Failed to join thread %d. Exiting...\n", ret, idx);
+      exit(EXIT_FAILURE);
+    }
+  }
+
+  return 0;
 }
