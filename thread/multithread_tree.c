@@ -69,14 +69,6 @@ void initialize(tree *t)
     printf("Sucessfully initialized the tree.\n");
 };
 
-void setTree(tree **t, char *key, void *value)
-{
-  *t = (tree *) malloc(sizeof(tree));
-  initialize(*t);
-  ((*t)->kv).key = key;
-  ((*t)->kv).value = value;
-};
-
 void add(tree *t, char *key, void *value)
 {
   int ret;
@@ -106,6 +98,7 @@ char lookup(char *key, void **value)
 
 void * operate(void *arg)
 {
+  tree *root = (tree *) arg;
   return NULL;
 };
 
@@ -114,24 +107,20 @@ int main(int argc, char **argv)
   short numThreads = 1;
   int idx, ret;
   pthread_t *thread;
-  tree *root;
-  char initKey = 'a';
-  int initValue = 0;
+  tree *root = (tree *) malloc(sizeof(tree));
 
   if(argc == 2)
     numThreads = (short) atoi(argv[1]);
 
   thread = (pthread_t *) malloc(numThreads * sizeof(pthread_t));
 
-  setTree(&root, &initKey, &initValue);
-  if(DEBUG)
-    printf("[main] root = %p\n", root);
+  initialize(root);
 
   if(VERBOSE)
     printf("Threads to create: %d\n", numThreads);
 
   for (idx = 0; idx < numThreads; idx++) {
-    ret = pthread_create(&thread[idx], NULL, operate, NULL);
+    ret = pthread_create(&thread[idx], NULL, operate, (void *) root);
     if (ret != 0) {
       fprintf(stderr, "(err = %d) Failed to create thread %d. Exiting...\n", ret, idx);
       exit(EXIT_FAILURE);
