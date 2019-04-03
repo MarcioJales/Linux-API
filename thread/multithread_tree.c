@@ -31,8 +31,8 @@
 #define FOUND     1
 
 typedef struct keyPair {
-  char key;
-  short value;
+  char *key;
+  void *value;
   pthread_mutex_t mtx;
 } element;
 
@@ -46,13 +46,13 @@ void initialize(tree *t)
 {
   int ret;
 
-  if(DEBUG)
-    printf("Initializing tree (key = 0)...\n");
+  if(VERBOSE)
+    printf("Initializing tree...\n");
 
   t->left = NULL;
   t->right = NULL;
-  (t->kv).key = 0;
-  (t->kv).value = 88;
+  (t->kv).key = (char *) malloc(sizeof(char));
+  (t->kv).value = (void *) malloc(8);
 
   /*  Book quoting:
 
@@ -65,13 +65,33 @@ void initialize(tree *t)
     exit(EXIT_FAILURE);
   }
 
-  if(DEBUG)
+  if(VERBOSE)
     printf("Sucessfully initialized the tree.\n");
+};
+
+void setTree(tree **t, char *key, void *value)
+{
+  *t = (tree *) malloc(sizeof(tree));
+  initialize(*t);
+  ((*t)->kv).key = key;
+  ((*t)->kv).value = value;
 };
 
 void add(tree *t, char *key, void *value)
 {
+  int ret;
 
+  ret = pthread_mutex_lock(&(t->kv).mtx);
+  if(ret){
+    fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+    exit(EXIT_FAILURE);
+  }
+
+  if(*key > *((t->kv).key)) {
+    if(t->right == NULL) {
+      setTree(&(t->right), key, value);
+    }
+  }
 };
 
 void delete(tree *t, char *key)
@@ -94,16 +114,20 @@ int main(int argc, char **argv)
   short numThreads = 1;
   int idx, ret;
   pthread_t *thread;
-  tree *root = (tree *) malloc(sizeof(tree));
+  tree *root;
+  char initKey = 'a';
+  int initValue = 0;
 
   if(argc == 2)
     numThreads = (short) atoi(argv[1]);
 
   thread = (pthread_t *) malloc(numThreads * sizeof(pthread_t));
 
-  initialize(root);
-
+  setTree(&root, &initKey, &initValue);
   if(DEBUG)
+    printf("[main] root = %p\n", root);
+
+  if(VERBOSE)
     printf("Threads to create: %d\n", numThreads);
 
   for (idx = 0; idx < numThreads; idx++) {
