@@ -107,8 +107,8 @@ char lookup(char *key, void **value)
 void * operate(void *arg)
 {
   tree *root = (tree *) arg;
-  char key = 'a';
-  float value = 4.4;
+  char key = 'v';
+  float value = 99.6;
 
   if(DEBUG)
     printf("[operate] root = %p\n", root);
