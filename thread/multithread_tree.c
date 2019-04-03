@@ -14,6 +14,7 @@
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef DEBUG
 #define DEBUG 1
@@ -51,8 +52,8 @@ void initialize(tree *t)
 
   t->left = NULL;
   t->right = NULL;
-  (t->kv).key = (char *) malloc(sizeof(char));
-  (t->kv).value = (void *) malloc(8);
+  (t->kv).key = NULL;
+  (t->kv).value = NULL;
 
   /*  Book quoting:
 
@@ -79,10 +80,17 @@ void add(tree *t, char *key, void *value)
     exit(EXIT_FAILURE);
   }
 
-  if(*key > *((t->kv).key)) {
-    if(t->right == NULL) {
-      setTree(&(t->right), key, value);
-    }
+  if((t->kv).key == NULL) {
+    (t->kv).key = (char *) malloc(sizeof(char));
+    (t->kv).value = malloc(sizeof(8));
+    memcpy((t->kv).key, key, sizeof(char));
+    memcpy((t->kv).value, value, sizeof(8));
+  }
+
+  ret = pthread_mutex_unlock(&(t->kv).mtx);
+  if(ret){
+    fprintf(stderr, "(err = %d) Failed to unlock mutex. Exiting...\n", ret);
+    exit(EXIT_FAILURE);
   }
 };
 
@@ -99,6 +107,14 @@ char lookup(char *key, void **value)
 void * operate(void *arg)
 {
   tree *root = (tree *) arg;
+  char key = 'a';
+  float value = 4.4;
+
+  if(DEBUG)
+    printf("[operate] root = %p\n", root);
+
+  add(root, &key, &value);
+
   return NULL;
 };
 
@@ -107,7 +123,10 @@ int main(int argc, char **argv)
   short numThreads = 1;
   int idx, ret;
   pthread_t *thread;
+
   tree *root = (tree *) malloc(sizeof(tree));
+  if(DEBUG)
+    printf("[main] root = %p\n", root);
 
   if(argc == 2)
     numThreads = (short) atoi(argv[1]);
@@ -134,6 +153,9 @@ int main(int argc, char **argv)
       exit(EXIT_FAILURE);
     }
   }
+
+  if(DEBUG)
+    printf("[main] key = %c, value = %f\n", *(root->kv).key, *((float *)(root->kv).value));
 
   return 0;
 }
