@@ -97,6 +97,20 @@ void add(tree *t, char *key, void *value)
       add(t->right, key, value);
     }
   }
+  else if(*key < *(t->kv).key) {
+    if(t->left == NULL) {
+      t->left = (tree *) malloc(sizeof(tree));
+      initialize(t->left);
+
+      ret = pthread_mutex_unlock(&(t->kv).mtx);
+      if(ret){
+        fprintf(stderr, "(err = %d) Failed to unlock mutex. Exiting...\n", ret);
+        exit(EXIT_FAILURE);
+      }
+
+      add(t->left, key, value);
+    }
+  }
 
   ret = pthread_mutex_unlock(&(t->kv).mtx);
   if(ret){
@@ -119,12 +133,17 @@ void * operate(void *arg)
 {
   tree *root = (tree *) arg;
   char key = 'v';
-  float value = 99.6;
+  float value = 12;
 
   add(root, &key, &value);
 
-  key = 'w';
-  value = 10;
+  key = 'a';
+  value = 44.7;
+
+  add(root, &key, &value);
+
+  key = 'z';
+  value = 83.711;
 
   add(root, &key, &value);
 
@@ -165,8 +184,9 @@ int main(int argc, char **argv)
     }
   }
 
-  // printf("key = %c, value = %f\n", *(root->kv).key, *((float *)(root->kv).value));
-  // printf("key = %c, value = %f\n", *((root->right)->kv).key, *((float *)((root->right)->kv).value));
+  printf("key = %c, value = %f\n", *(root->kv).key, *((float *)(root->kv).value));
+  printf("key = %c, value = %f\n", *((root->right)->kv).key, *((float *)((root->right)->kv).value));
+  printf("key = %c, value = %f\n", *((root->left)->kv).key, *((float *)((root->left)->kv).value));
 
   return 0;
 }
