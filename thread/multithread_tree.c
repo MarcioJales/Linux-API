@@ -137,17 +137,17 @@ void * operate(void *arg)
     tree *root = (tree *) arg;
     char key = 'v';
     float value = 12;
-
     add(root, &key, &value);
 
     key = 'a';
     value = 44.7;
-
     add(root, &key, &value);
 
     key = 'z';
     value = 83.711;
+    add(root, &key, &value);
 
+    value = 2.9;
     add(root, &key, &value);
 
     return NULL;
