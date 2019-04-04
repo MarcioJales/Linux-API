@@ -26,97 +26,100 @@
 #define FOUND     1
 
 typedef struct keyPair {
-  char *key;
-  void *value;
-  pthread_mutex_t mtx;
+    char *key;
+    void *value;
+    pthread_mutex_t mtx;
 } element;
 
 typedef struct binaryTree {
-  struct binaryTree *left;
-  struct binaryTree *right;
-  element kv;
+    struct binaryTree *left;
+    struct binaryTree *right;
+    element kv;
 } tree;
 
 void initialize(tree *t)
 {
-  int ret;
+    int ret;
 
-  if(VERBOSE)
-    printf("Initializing tree...\n");
+    if(VERBOSE)
+        printf("Initializing tree...\n");
 
-  t->left = NULL;
-  t->right = NULL;
-  (t->kv).key = NULL;
-  (t->kv).value = NULL;
+    t->left = NULL;
+    t->right = NULL;
+    (t->kv).key = NULL;
+    (t->kv).value = NULL;
 
-  /*  Book quoting:
+    /*  Book quoting:
 
-      Among the cases where we must use pthread_mutex_init() rather than a static initializer are the following:
+        Among the cases where we must use pthread_mutex_init() rather than a static initializer are the following:
 
-      - The mutex was dynamically allocated on the heap. For example, suppose that we create a dynamically allocated linked list of structures, and each structure in the list includes a pthread_mutex_t field that holds a mutex that is used to protect access to that structure.
-  */
-  if(ret = pthread_mutex_init(&(t->kv).mtx, NULL)) {
-    fprintf(stderr, "(err = %d) Failed to initialize mutex. Exiting...\n", ret);
-    exit(EXIT_FAILURE);
-  }
+        - The mutex was dynamically allocated on the heap. For example, suppose that we create a dynamically allocated linked list of structures, and each structure in the list includes a pthread_mutex_t field that holds a mutex that is used to protect access to that structure.
+    */
+    if(ret = pthread_mutex_init(&(t->kv).mtx, NULL)) {
+        fprintf(stderr, "(err = %d) Failed to initialize mutex. Exiting...\n", ret);
+        exit(EXIT_FAILURE);
+    }
 
-  if(VERBOSE)
-    printf("Sucessfully initialized the tree.\n");
+    if(VERBOSE)
+        printf("Sucessfully initialized the tree.\n");
 };
 
 void add(tree *t, char *key, void *value)
 {
-  int ret;
+    int ret;
 
-  ret = pthread_mutex_lock(&(t->kv).mtx);
-  if(ret){
-    fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
-    exit(EXIT_FAILURE);
-  }
+    ret = pthread_mutex_lock(&(t->kv).mtx);
+    if(ret){
+        fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+        exit(EXIT_FAILURE);
+    }
 
-  if(VERBOSE)
-    printf("Thread ID: %u\n", (unsigned int) pthread_self());
+    if(VERBOSE)
+        printf("Thread ID: %u\n", (unsigned int) pthread_self());
 
-  if((t->kv).key == NULL) {
-    (t->kv).key = (char *) malloc(sizeof(char));
-    (t->kv).value = malloc(sizeof(8));
-    memcpy((t->kv).key, key, sizeof(char));
-    memcpy((t->kv).value, value, sizeof(8));
-  }
-  else if(*key > *(t->kv).key) {
-    if(t->right == NULL) {
-      t->right = (tree *) malloc(sizeof(tree));
-      initialize(t->right);
+    if((t->kv).key == NULL) {
+        (t->kv).key = (char *) malloc(sizeof(char));
+        (t->kv).value = malloc(sizeof(8));
+        memcpy((t->kv).key, key, sizeof(char));
+        memcpy((t->kv).value, value, sizeof(8));
+    }
+    else if(*key > *(t->kv).key) {
+        if(t->right == NULL) {
+            t->right = (tree *) malloc(sizeof(tree));
+            initialize(t->right);
+        }
 
-      ret = pthread_mutex_unlock(&(t->kv).mtx);
-      if(ret){
+        ret = pthread_mutex_unlock(&(t->kv).mtx);
+        if(ret) {
+            fprintf(stderr, "(err = %d) Failed to unlock mutex. Exiting...\n", ret);
+            exit(EXIT_FAILURE);
+        }
+
+        add(t->right, key, value);
+    }
+    else if(*key < *(t->kv).key) {
+        if(t->left == NULL) {
+            t->left = (tree *) malloc(sizeof(tree));
+            initialize(t->left);
+        }
+
+        ret = pthread_mutex_unlock(&(t->kv).mtx);
+        if(ret){
+            fprintf(stderr, "(err = %d) Failed to unlock mutex. Exiting...\n", ret);
+            exit(EXIT_FAILURE);
+        }
+
+        add(t->left, key, value);
+    }
+    else if(*key == *(t->kv).key) {
+        memcpy((t->kv).value, value, sizeof(8));
+    }
+
+    ret = pthread_mutex_unlock(&(t->kv).mtx);
+    if(ret){
         fprintf(stderr, "(err = %d) Failed to unlock mutex. Exiting...\n", ret);
         exit(EXIT_FAILURE);
-      }
-
-      add(t->right, key, value);
     }
-  }
-  else if(*key < *(t->kv).key) {
-    if(t->left == NULL) {
-      t->left = (tree *) malloc(sizeof(tree));
-      initialize(t->left);
-
-      ret = pthread_mutex_unlock(&(t->kv).mtx);
-      if(ret){
-        fprintf(stderr, "(err = %d) Failed to unlock mutex. Exiting...\n", ret);
-        exit(EXIT_FAILURE);
-      }
-
-      add(t->left, key, value);
-    }
-  }
-
-  ret = pthread_mutex_unlock(&(t->kv).mtx);
-  if(ret){
-    fprintf(stderr, "(err = %d) Failed to unlock mutex. Exiting...\n", ret);
-    exit(EXIT_FAILURE);
-  }
 };
 
 void delete(tree *t, char *key)
@@ -131,62 +134,62 @@ char lookup(char *key, void **value)
 
 void * operate(void *arg)
 {
-  tree *root = (tree *) arg;
-  char key = 'v';
-  float value = 12;
+    tree *root = (tree *) arg;
+    char key = 'v';
+    float value = 12;
 
-  add(root, &key, &value);
+    add(root, &key, &value);
 
-  key = 'a';
-  value = 44.7;
+    key = 'a';
+    value = 44.7;
 
-  add(root, &key, &value);
+    add(root, &key, &value);
 
-  key = 'z';
-  value = 83.711;
+    key = 'z';
+    value = 83.711;
 
-  add(root, &key, &value);
+    add(root, &key, &value);
 
-  return NULL;
+    return NULL;
 };
 
 int main(int argc, char **argv)
 {
-  short numThreads = 1;
-  int idx, ret;
-  pthread_t *thread;
+    short numThreads = 1;
+    int idx, ret;
+    pthread_t *thread;
 
-  tree *root = (tree *) malloc(sizeof(tree));
+    tree *root = (tree *) malloc(sizeof(tree));
 
-  if(argc == 2)
+    if(argc == 2)
     numThreads = (short) atoi(argv[1]);
 
-  thread = (pthread_t *) malloc(numThreads * sizeof(pthread_t));
+    thread = (pthread_t *) malloc(numThreads * sizeof(pthread_t));
 
-  initialize(root);
+    initialize(root);
 
-  if(VERBOSE)
+    if(VERBOSE)
     printf("Threads to create: %d\n", numThreads);
 
-  for (idx = 0; idx < numThreads; idx++) {
-    ret = pthread_create(&thread[idx], NULL, operate, (void *) root);
-    if (ret != 0) {
-      fprintf(stderr, "(err = %d) Failed to create thread %d. Exiting...\n", ret, idx);
-      exit(EXIT_FAILURE);
+    for (idx = 0; idx < numThreads; idx++) {
+        ret = pthread_create(&thread[idx], NULL, operate, (void *) root);
+        if (ret != 0) {
+            fprintf(stderr, "(err = %d) Failed to create thread %d. Exiting...\n", ret, idx);
+            exit(EXIT_FAILURE);
+        }
     }
-  }
 
-  for (idx = 0; idx < numThreads; idx++) {
-    ret = pthread_join(thread[idx], NULL);
-    if (ret != 0) {
-      fprintf(stderr, "(err = %d) Failed to join thread %d. Exiting...\n", ret, idx);
-      exit(EXIT_FAILURE);
+    for (idx = 0; idx < numThreads; idx++) {
+        ret = pthread_join(thread[idx], NULL);
+        if (ret != 0) {
+          fprintf(stderr, "(err = %d) Failed to join thread %d. Exiting...\n", ret, idx);
+          exit(EXIT_FAILURE);
+        }
     }
-  }
 
-  printf("key = %c, value = %f\n", *(root->kv).key, *((float *)(root->kv).value));
-  printf("key = %c, value = %f\n", *((root->right)->kv).key, *((float *)((root->right)->kv).value));
-  printf("key = %c, value = %f\n", *((root->left)->kv).key, *((float *)((root->left)->kv).value));
+    printf("key = %c, value = %f\n", *(root->kv).key, *((float *)(root->kv).value));
+    printf("key = %c, value = %f\n", *((root->right)->kv).key, *((float *)((root->right)->kv).value));
+    printf("key = %c, value = %f\n", *((root->left)->kv).key, *((float *)((root->left)->kv).value));
 
-  return 0;
+    return 0;
 }
