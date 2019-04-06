@@ -74,8 +74,10 @@ void add(tree *t, char *key, void *value)
         exit(EXIT_FAILURE);
     }
 
-    if(VERBOSE)
-        printf("Thread ID: %u\n", (unsigned int) pthread_self());
+    if(VERBOSE) {
+        printf("[add] key = %c, value = %f\n", *key, *(float *) value);
+        printf("[add] Thread ID: %u\n", (unsigned int) pthread_self());
+    }
 
     if((t->kv).key == NULL) {
         (t->kv).key = (char *) malloc(sizeof(char));
