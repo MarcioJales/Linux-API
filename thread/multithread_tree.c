@@ -172,6 +172,7 @@ void *operate3(void *arg)
 };
 
 void *(*operate[])(void *arg) = { operate1, operate2, operate3 };
+tree *root;
 
 int main(int argc, char **argv)
 {
@@ -179,7 +180,7 @@ int main(int argc, char **argv)
     int idx, ret;
     pthread_t *thread;
 
-    tree *root = (tree *) malloc(sizeof(tree));
+    root = (tree *) malloc(sizeof(tree));
 
     thread = (pthread_t *) malloc(numThreads * sizeof(pthread_t));
 
