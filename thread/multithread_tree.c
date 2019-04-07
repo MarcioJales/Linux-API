@@ -75,8 +75,7 @@ void add(tree *t, char *key, void *value)
     }
 
     if(VERBOSE) {
-        printf("[add] key = %c, value = %f\n", *key, *(float *) value);
-        printf("[add] Thread ID: %u\n", (unsigned int) pthread_self());
+        printf("[add] key = %c, value = %f, Thread ID: %u\n", *key, *(float *) value, (unsigned int) pthread_self());
     }
 
     if((t->kv).key == NULL) {
@@ -129,42 +128,58 @@ void delete(tree *t, char *key)
 
 };
 
-char lookup(char *key, void **value)
+short int lookup(char *key, void **value)
 {
 
 };
 
-void * operate(void *arg)
+void *operate1(void *arg)
 {
     tree *root = (tree *) arg;
-    char key = 'v';
+    char key = 'g';
     float value = 12;
-    add(root, &key, &value);
-
-    key = 'a';
-    value = 44.7;
-    add(root, &key, &value);
-
-    key = 'z';
-    value = 83.711;
-    add(root, &key, &value);
-
-    value = 2.9;
     add(root, &key, &value);
 
     return NULL;
 };
 
+void *operate2(void *arg)
+{
+    tree *root = (tree *) arg;
+    char key = 'b';
+    float value = 66.6;
+    add(root, &key, &value);
+
+    key = 'v';
+    value = 44.7;
+    add(root, &key, &value);
+
+    return NULL;
+};
+
+void *operate3(void *arg)
+{
+    tree *root = (tree *) arg;
+    char key = 'd';
+    float value = 0.77;
+    add(root, &key, &value);
+
+    key = 'h';
+    value = 5711.09;
+    add(root, &key, &value);
+
+    return NULL;
+};
+
+void *(*operate[])(void *arg) = { operate1, operate2, operate3 };
+
 int main(int argc, char **argv)
 {
-    short numThreads = 1;
+    const int numThreads = 3;
     int idx, ret;
     pthread_t *thread;
 
     tree *root = (tree *) malloc(sizeof(tree));
-
-    if(argc == 2)
-    numThreads = (short) atoi(argv[1]);
 
     thread = (pthread_t *) malloc(numThreads * sizeof(pthread_t));
 
@@ -174,7 +189,7 @@ int main(int argc, char **argv)
     printf("Threads to create: %d\n", numThreads);
 
     for (idx = 0; idx < numThreads; idx++) {
-        ret = pthread_create(&thread[idx], NULL, operate, (void *) root);
+        ret = pthread_create(&thread[idx], NULL, operate[idx], (void *) root);
         if (ret != 0) {
             fprintf(stderr, "(err = %d) Failed to create thread %d. Exiting...\n", ret, idx);
             exit(EXIT_FAILURE);
@@ -188,10 +203,6 @@ int main(int argc, char **argv)
           exit(EXIT_FAILURE);
         }
     }
-
-    printf("key = %c, value = %f\n", *(root->kv).key, *((float *)(root->kv).value));
-    printf("key = %c, value = %f\n", *((root->right)->kv).key, *((float *)((root->right)->kv).value));
-    printf("key = %c, value = %f\n", *((root->left)->kv).key, *((float *)((root->left)->kv).value));
 
     return 0;
 }
