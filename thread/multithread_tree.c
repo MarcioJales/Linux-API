@@ -37,6 +37,8 @@ typedef struct binaryTree {
     element kv;
 } tree;
 
+tree *root;
+
 void initialize(tree *t)
 {
     int ret;
@@ -128,9 +130,33 @@ void delete(tree *t, char *key)
 
 };
 
-short int lookup(char *key, void **value)
+int lookup(char *key, void **value)
 {
+    int wasFound = NOTFOUND;
+    tree *currentTree = root;
 
+    while(!wasFound) {
+        if((currentTree->kv).key == NULL)
+            break;
+        else if(*key == *(currentTree->kv).key) {
+            *value = (currentTree->kv).value;
+            wasFound = FOUND;
+        }
+        else if(*key < *(currentTree->kv).key) {
+            if(currentTree->left == NULL)
+                break;
+            else
+                currentTree = currentTree->left;
+        }
+        else if(*key > *(currentTree->kv).key) {
+            if(currentTree->right == NULL)
+                break;
+            else
+                currentTree = currentTree->right;
+        }
+    }
+
+    return wasFound;
 };
 
 void *operate1(void *arg)
@@ -172,12 +198,13 @@ void *operate3(void *arg)
 };
 
 void *(*operate[])(void *arg) = { operate1, operate2, operate3 };
-tree *root;
 
 int main(int argc, char **argv)
 {
     const int numThreads = 3;
     int idx, ret;
+    char key = argv[1][0];
+    void *value;
     pthread_t *thread;
 
     root = (tree *) malloc(sizeof(tree));
@@ -204,6 +231,12 @@ int main(int argc, char **argv)
           exit(EXIT_FAILURE);
         }
     }
+
+    printf("Search for key %c...\n", key);
+    if(lookup(&key, &value))
+        printf("Value for key %c: %f\n", key, *((float *)value));
+    else
+        printf("Value for key %c not found\n", key);
 
     return 0;
 }
