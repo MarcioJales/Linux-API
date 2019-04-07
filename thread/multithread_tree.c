@@ -161,7 +161,6 @@ int lookup(char *key, void **value)
 
 void *operate1(void *arg)
 {
-    tree *root = (tree *) arg;
     char key = 'g';
     float value = 12;
     add(root, &key, &value);
@@ -171,7 +170,6 @@ void *operate1(void *arg)
 
 void *operate2(void *arg)
 {
-    tree *root = (tree *) arg;
     char key = 'b';
     float value = 66.6;
     add(root, &key, &value);
@@ -185,8 +183,7 @@ void *operate2(void *arg)
 
 void *operate3(void *arg)
 {
-    tree *root = (tree *) arg;
-    char key = 'd';
+    char key = '=';
     float value = 0.77;
     add(root, &key, &value);
 
@@ -217,7 +214,7 @@ int main(int argc, char **argv)
     printf("Threads to create: %d\n", numThreads);
 
     for (idx = 0; idx < numThreads; idx++) {
-        ret = pthread_create(&thread[idx], NULL, operate[idx], (void *) root);
+        ret = pthread_create(&thread[idx], NULL, operate[idx], NULL);
         if (ret != 0) {
             fprintf(stderr, "(err = %d) Failed to create thread %d. Exiting...\n", ret, idx);
             exit(EXIT_FAILURE);
