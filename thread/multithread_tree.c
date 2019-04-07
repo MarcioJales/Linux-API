@@ -25,6 +25,7 @@
 #define NOTFOUND  0
 #define FOUND     1
 
+/* Structs definitions ***************************************************/
 typedef struct keyPair {
     char *key;
     void *value;
@@ -36,10 +37,14 @@ typedef struct binaryTree {
     struct binaryTree *right;
     element kv;
 } tree;
+/**************************************************************************/
 
+/** Global variables ******************************************************/
 tree *root;
 char keyToSearch[2];
+/**************************************************************************/
 
+/* Tree manipulation functions ********************************************/
 void initialize(tree *t)
 {
     int ret;
@@ -186,7 +191,9 @@ int lookup(char *key, void **value)
 
     return wasFound;
 };
+/**************************************************************************/
 
+/* Start functions for the threads ****************************************/
 void *operate1(void *arg)
 {
     char key = 'g';
@@ -230,6 +237,7 @@ void *operate3(void *arg)
 };
 
 void *(*operate[])(void *arg) = { operate1, operate2, operate3 };
+/**************************************************************************/
 
 int main(int argc, char **argv)
 {
