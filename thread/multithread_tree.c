@@ -38,6 +38,7 @@ typedef struct binaryTree {
 } tree;
 
 tree *root;
+char keyToSearch[2];
 
 void initialize(tree *t)
 {
@@ -133,9 +134,16 @@ void delete(tree *t, char *key)
 int lookup(char *key, void **value)
 {
     int wasFound = NOTFOUND;
+    int ret;
     tree *currentTree = root;
 
     while(!wasFound) {
+        ret = pthread_mutex_lock(&(currentTree->kv).mtx);
+        if(ret){
+            fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+            exit(EXIT_FAILURE);
+        }
+
         if((currentTree->kv).key == NULL)
             break;
         else if(*key == *(currentTree->kv).key) {
@@ -145,15 +153,35 @@ int lookup(char *key, void **value)
         else if(*key < *(currentTree->kv).key) {
             if(currentTree->left == NULL)
                 break;
-            else
+            else {
+                ret = pthread_mutex_unlock(&(currentTree->kv).mtx);
+                if(ret){
+                    fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+                    exit(EXIT_FAILURE);
+                }
+
                 currentTree = currentTree->left;
+            }
         }
         else if(*key > *(currentTree->kv).key) {
             if(currentTree->right == NULL)
                 break;
-            else
+            else {
+                ret = pthread_mutex_unlock(&(currentTree->kv).mtx);
+                if(ret){
+                    fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+                    exit(EXIT_FAILURE);
+                }
+
                 currentTree = currentTree->right;
+            }
         }
+    }
+
+    ret = pthread_mutex_unlock(&(currentTree->kv).mtx);
+    if(ret){
+        fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+        exit(EXIT_FAILURE);
     }
 
     return wasFound;
@@ -164,6 +192,13 @@ void *operate1(void *arg)
     char key = 'g';
     float value = 12;
     add(root, &key, &value);
+
+    void *val;
+    printf("[operate1] Search for key %c...\n", keyToSearch[1]);
+    if(lookup(&keyToSearch[1], &val))
+        printf("[operate1] Value for key %c: %f\n", keyToSearch[1], *((float *)val));
+    else
+        printf("[operate1] Value for key %c not found\n", keyToSearch[1]);
 
     return NULL;
 };
@@ -200,13 +235,13 @@ int main(int argc, char **argv)
 {
     const int numThreads = 3;
     int idx, ret;
-    char key = argv[1][0];
     void *value;
     pthread_t *thread;
 
     root = (tree *) malloc(sizeof(tree));
-
     thread = (pthread_t *) malloc(numThreads * sizeof(pthread_t));
+    keyToSearch[0] = argv[1][0];
+    keyToSearch[1] = argv[2][0];
 
     initialize(root);
 
@@ -229,11 +264,11 @@ int main(int argc, char **argv)
         }
     }
 
-    printf("Search for key %c...\n", key);
-    if(lookup(&key, &value))
-        printf("Value for key %c: %f\n", key, *((float *)value));
+    printf("Search for key %c...\n", keyToSearch[0]);
+    if(lookup(&keyToSearch[0], &value))
+        printf("Value for key %c: %f\n", keyToSearch[0], *((float *)value));
     else
-        printf("Value for key %c not found\n", key);
+        printf("Value for key %c not found\n", keyToSearch[0]);
 
     return 0;
 }
