@@ -133,6 +133,17 @@ void add(tree *t, char *key, void *value)
 
 void delete(tree *t, char *key)
 {
+    int ret;
+
+    ret = pthread_mutex_lock(&(t->kv).mtx);
+    if(ret){
+        fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+        exit(EXIT_FAILURE);
+    }
+
+    if(VERBOSE) {
+        printf("[delete] key = %c, Thread ID: %u\n", *key, (unsigned int) pthread_self());
+    }
 
 };
 
