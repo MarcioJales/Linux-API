@@ -122,6 +122,13 @@ int lookup(tree *t, char *key, void **value)
     if((t->kv).key != NULL) {
         if(*key == *(t->kv).key) {
             *value = (t->kv).value;
+
+            ret = pthread_mutex_unlock(&(t->kv).mtx);
+            if(ret){
+                fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+                exit(EXIT_FAILURE);
+            }
+            
             return FOUND;
         }
         else if(*key < *(t->kv).key) {
