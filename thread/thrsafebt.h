@@ -21,8 +21,6 @@ typedef struct binaryTree {
     element kv;
 } tree;
 
-tree *root;
-
 void initialize(tree *t);
 void add(tree *t, char *key, void *value);
 void delete(tree *t, char *key);
