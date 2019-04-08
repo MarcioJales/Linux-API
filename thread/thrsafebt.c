@@ -106,6 +106,68 @@ void add(tree *t, char *key, void *value)
 
 void delete(tree *t, char *key)
 {
+  static tree *previousNode;
+  static tree *leftMostNode;
+
+  int ret;
+
+  ret = pthread_mutex_lock(&(t->kv).mtx);
+  if(ret){
+      fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+      exit(EXIT_FAILURE);
+  }
+
+  if((t->kv).key != NULL) {
+      if(*key == *(t->kv).key) {
+          *value = (t->kv).value;
+
+          ret = pthread_mutex_unlock(&(t->kv).mtx);
+          if(ret){
+              fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+              exit(EXIT_FAILURE);
+          }
+
+          return FOUND;
+      }
+      else if(*key < *(t->kv).key) {
+          if(t->left != NULL) {
+              previousNode = t;
+    
+              ret = pthread_mutex_unlock(&(t->kv).mtx);
+              if(ret){
+                  fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+                  exit(EXIT_FAILURE);
+              }
+
+              delete(t->left, key);
+          }
+          else
+            printf("Key %c could not be deleted, since it wasn't found.\n");
+      }
+      else if(*key > *(t->kv).key) {
+          if(t->right != NULL) {
+              previousNode = t;
+
+              ret = pthread_mutex_unlock(&(t->kv).mtx);
+              if(ret){
+                  fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+                  exit(EXIT_FAILURE);
+              }
+
+              delete(t->right, key);
+          }
+          else
+            printf("Key %c could not be deleted, since it wasn't found.\n");
+      }
+  }
+  else
+    printf("Key %c could not be deleted, since it wasn't found.\n");
+
+  ret = pthread_mutex_unlock(&(t->kv).mtx);
+  if(ret) {
+      fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+      exit(EXIT_FAILURE);
+  }
 }
 
 /* The lookup function described by the exercise doesn't take the "tree" argument, although it is needed. Therefore, I've changed the function prototype */
@@ -128,7 +190,7 @@ int lookup(tree *t, char *key, void **value)
                 fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
                 exit(EXIT_FAILURE);
             }
-            
+
             return FOUND;
         }
         else if(*key < *(t->kv).key) {
@@ -156,7 +218,7 @@ int lookup(tree *t, char *key, void **value)
     }
 
     ret = pthread_mutex_unlock(&(t->kv).mtx);
-    if(ret){
+    if(ret) {
         fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
         exit(EXIT_FAILURE);
     }
