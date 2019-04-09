@@ -155,7 +155,7 @@ void delete(tree *t, char *key)
                   exit(EXIT_FAILURE);
               }
 
-              delete(t->right, leftMostNode->kv).key);
+              delete(t->right, (leftMostNode->kv).key);
           }
       }
       else if(*key < *(t->kv).key) {
@@ -172,7 +172,7 @@ void delete(tree *t, char *key)
               delete(t->left, key);
           }
           else
-            printf("Key %c could not be deleted, since it wasn't found.\n");
+            printf("Key %c could not be deleted, since it wasn't found.\n", *key);
       }
       else if(*key > *(t->kv).key) {
           if(t->right != NULL) {
@@ -188,11 +188,11 @@ void delete(tree *t, char *key)
               delete(t->right, key);
           }
           else
-            printf("Key %c could not be deleted, since it wasn't found.\n");
+            printf("Key %c could not be deleted, since it wasn't found.\n", *key);
       }
   }
   else
-    printf("Key %c could not be deleted, since it wasn't found.\n");
+    printf("Key %c could not be deleted, since it wasn't found.\n", *key);
 
   ret = pthread_mutex_unlock(&(t->kv).mtx);
   if(ret) {
