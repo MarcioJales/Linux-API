@@ -25,6 +25,9 @@ void *operate1(void *arg)
     else
         printf("[operate1] Value for key %c not found\n", keyToSearch[1]);
 
+    key = 'b';
+    delete(root, &key);
+
     return NULL;
 };
 
