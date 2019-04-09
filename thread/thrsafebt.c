@@ -110,12 +110,8 @@ tree * findLeftMostNode(tree *t)
 {
     tree *currentNode = t;
 
-    if(currentNode->right != NULL) {
-        currentNode = t->right;
-        while(currentNode->left != NULL) {
-            currentNode = currentNode->left;
-        }
-    }
+    while(currentNode->left != NULL)
+        currentNode = currentNode->left;
 
     return currentNode;
 }
@@ -136,12 +132,30 @@ void delete(tree *t, char *key)
 
   if((t->kv).key != NULL) {
       if(*key == *(t->kv).key) {
+          if(t->left == NULL) {
+              if(pos == left)
+                  previousNode->left = t->right;
+              if(pos == right)
+                  previousNode->right = t->right;
+          }
+          else if(t->right == NULL) {
+              if(pos == left)
+                  previousNode->left = t->left;
+              if(pos == right)
+                  previousNode->right = t->left;
+          }
+          else {
+              leftMostNode = findLeftMostNode(t->right);
+              memcpy((t->kv).key, (leftMostNode->kv).key, sizeof(char));
+              memcpy((t->kv).value, (leftMostNode->kv).value, sizeof(8));
 
+              ret = pthread_mutex_unlock(&(t->kv).mtx);
+              if(ret){
+                  fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+                  exit(EXIT_FAILURE);
+              }
 
-          ret = pthread_mutex_unlock(&(t->kv).mtx);
-          if(ret){
-              fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
-              exit(EXIT_FAILURE);
+              delete(t->right, leftMostNode->kv).key);
           }
       }
       else if(*key < *(t->kv).key) {
