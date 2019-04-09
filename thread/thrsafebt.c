@@ -17,6 +17,8 @@
 #include <string.h>
 #include <thrsafebt.h>
 
+enum nodePosition {right, left, none};
+
 void initialize(tree *t)
 {
     int ret;
@@ -104,10 +106,25 @@ void add(tree *t, char *key, void *value)
     }
 }
 
+tree * findLeftMostNode(tree *t)
+{
+    tree *currentNode = t;
+
+    if(currentNode->right != NULL) {
+        currentNode = t->right;
+        while(currentNode->left != NULL) {
+            currentNode = currentNode->left;
+        }
+    }
+
+    return currentNode;
+}
+
 void delete(tree *t, char *key)
 {
-  static tree *previousNode;
   static tree *leftMostNode;
+  static tree *previousNode;
+  enum nodePosition pos = none;
 
   int ret;
 
@@ -119,20 +136,19 @@ void delete(tree *t, char *key)
 
   if((t->kv).key != NULL) {
       if(*key == *(t->kv).key) {
-          *value = (t->kv).value;
+
 
           ret = pthread_mutex_unlock(&(t->kv).mtx);
           if(ret){
               fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
               exit(EXIT_FAILURE);
           }
-
-          return FOUND;
       }
       else if(*key < *(t->kv).key) {
           if(t->left != NULL) {
               previousNode = t;
-    
+              pos = left;
+
               ret = pthread_mutex_unlock(&(t->kv).mtx);
               if(ret){
                   fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
@@ -147,6 +163,7 @@ void delete(tree *t, char *key)
       else if(*key > *(t->kv).key) {
           if(t->right != NULL) {
               previousNode = t;
+              pos = right;
 
               ret = pthread_mutex_unlock(&(t->kv).mtx);
               if(ret){
