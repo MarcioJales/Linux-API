@@ -130,6 +130,10 @@ void delete(tree *t, char *key)
       exit(EXIT_FAILURE);
   }
 
+  if(VERBOSE) {
+      printf("[delete] key = %c, Thread ID: %u\n", *key, (unsigned int) pthread_self());
+  }
+
   if((t->kv).key != NULL) {
       if(*key == *(t->kv).key) {
           if(t->left == NULL) {
