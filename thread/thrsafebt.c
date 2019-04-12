@@ -17,6 +17,8 @@
 #include <string.h>
 #include <thrsafebt.h>
 
+enum childPos {left, right, none};
+
 void initialize(tree *t)
 {
     int ret;
@@ -120,26 +122,96 @@ tree * findLeftMostNode(tree *t)
 void delete(tree *t, char *key)
 {
     int ret;
+    tree *currentNode = t;
+    tree *previousNode = NULL;
+    tree *leftMostNode = NULL;
+    enum childPos pos = none;
 
-    if(t == NULL)
-      return;
-
-    ret = pthread_mutex_lock(&(t->kv).mtx);
-    if(ret) {
-        fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
-        exit(EXIT_FAILURE);
+    if(currentNode == NULL) {
+        if(VERBOSE)
+            printf("[delete] key = %c not deleted (tree = NULL), Thread ID: %u\n", *key, (unsigned int) pthread_self());
+        return;
     }
 
-    if(VERBOSE) {
+    if(VERBOSE)
         printf("[delete] key = %c, Thread ID: %u\n", *key, (unsigned int) pthread_self());
-    }
 
-    
-    ret = pthread_mutex_unlock(&(t->kv).mtx);
+    ret = pthread_mutex_lock(&(currentNode->kv).mtx);
     if(ret) {
-        fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+        fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
         exit(EXIT_FAILURE);
     }
+
+    while(currentNode != NULL) {
+        if(*key == *(currentNode->kv).key) {
+            if(previousNode != NULL) {
+                if(currentNode->left == NULL) {
+                    if(pos == right)
+                        previousNode->right = currentNode->right;
+                    if(pos == left)
+                        previousNode->left = currentNode->right;
+                    break;
+                }
+                else if(currentNode->right == NULL) {
+                    if(pos == right)
+                        previousNode->right = currentNode->left;
+                    if(pos == left)
+                        previousNode->left = currentNode->left;
+                    break;
+                }
+
+                leftMostNode = findLeftMostNode(currentNode->right);
+
+                memcpy((currentNode->kv).key, (leftMostNode->kv).key, sizeof(char));
+                memcpy((currentNode->kv).value, (leftMostNode->kv).value, sizeof(8));
+
+                ret = pthread_mutex_unlock(&(currentNode->kv).mtx);
+                if(ret) {
+                    fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+                    exit(EXIT_FAILURE);
+                }
+
+                delete(currentNode, (leftMostNode->kv).key);
+            }
+        }
+        else if(*key < *(currentNode->kv).key) {
+            previousNode = currentNode;
+            pos = left;
+
+            ret = pthread_mutex_unlock(&(currentNode->kv).mtx);
+            if(ret){
+                fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+                exit(EXIT_FAILURE);
+            }
+
+            currentNode = currentNode->left;
+        }
+        else if(*key > *(currentNode->kv).key) {
+            previousNode = currentNode;
+            pos = right;
+
+            ret = pthread_mutex_unlock(&(currentNode->kv).mtx);
+            if(ret){
+                fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+                exit(EXIT_FAILURE);
+            }
+
+            currentNode = currentNode->right;
+        }
+    }
+
+    ret = pthread_mutex_unlock(&(currentNode->kv).mtx);
+    if(ret) {
+        fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+        exit(EXIT_FAILURE);
+    }
+
+    ret = pthread_mutex_destroy(&(currentNode->kv).mtx);
+    if(ret) {
+        fprintf(stderr, "(err = %d) Failed to destroy mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+        exit(EXIT_FAILURE);
+    }
+    free(currentNode);
 }
 
 /* The lookup function described by the exercise doesn't take the "tree" argument, although it is needed. Therefore, I've changed the function prototype */
