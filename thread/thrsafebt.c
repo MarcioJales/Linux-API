@@ -44,7 +44,7 @@ void initialize(tree *t)
     }
 
     if(DEBUG)
-        printf("Sucessfully initialized the tree.\n");
+        printf("Sucessfully initialized the tree. Thread ID: %u\n", (unsigned int) pthread_self());
 }
 
 void add(tree *t, char *key, void *value)
@@ -55,14 +55,13 @@ void add(tree *t, char *key, void *value)
         return;
 
     ret = pthread_mutex_lock(&(t->kv).mtx);
-    if(ret){
-        fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
+    if(ret) {
+        fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting... (Thread ID: %u)\n", ret, (unsigned int) pthread_self());
         exit(EXIT_FAILURE);
     }
 
-    if(DEBUG) {
+    if(DEBUG)
         printf("[add] key = %c, value = %f, Thread ID: %u\n", *key, *(float *) value, (unsigned int) pthread_self());
-    }
 
     if((t->kv).key == NULL) {
         if(DEBUG)
@@ -75,7 +74,7 @@ void add(tree *t, char *key, void *value)
     }
     else if(*key > *(t->kv).key) {
         if(DEBUG)
-            printf("[add] key is greater than key in this node (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+            printf("[add] key is greater than key in this node (key = %c, key here = %c, value = %f, Thread ID: %u)\n", *key, *(t->kv).key, *(float *) value, (unsigned int) pthread_self());
 
         if(t->right == NULL) {
             if(DEBUG)
@@ -95,7 +94,7 @@ void add(tree *t, char *key, void *value)
     }
     else if(*key < *(t->kv).key) {
         if(DEBUG)
-            printf("[add] key is less than key in this node (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+            printf("[add] key is less than key in this node (key = %c, key here = %c, value = %f, Thread ID: %u)\n", *key, *(t->kv).key, *(float *) value, (unsigned int) pthread_self());
 
         if(t->left == NULL) {
             if(DEBUG)
@@ -115,13 +114,13 @@ void add(tree *t, char *key, void *value)
     }
     else if(*key == *(t->kv).key) {
         if(DEBUG)
-            printf("[add] key is equal to key in this node (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+            printf("[add] key is equal to key in this node (key = %c, key here = %c, value = %f, Thread ID: %u)\n", *key, *(t->kv).key, *(float *) value, (unsigned int) pthread_self());
 
         memcpy((t->kv).value, value, sizeof(8));
     }
 
     ret = pthread_mutex_unlock(&(t->kv).mtx);
-    if(ret){
+    if(ret) {
         fprintf(stderr, "(err = %d) Failed to unlock mutex. Exiting...\n", ret);
         exit(EXIT_FAILURE);
     }
@@ -146,7 +145,7 @@ void delete(tree *t, char *key)
     enum childPos pos = none;
 
     if(currentNode == NULL) {
-        printf("[delete] key = %c not deleted (tree = NULL), Thread ID: %u\n", *key, (unsigned int) pthread_self());
+        printf("[delete] key = %c cannot be deleted (tree = NULL), Thread ID: %u\n", *key, (unsigned int) pthread_self());
         return;
     }
 
@@ -162,7 +161,7 @@ void delete(tree *t, char *key)
 
         if(*key == *(currentNode->kv).key) {
             if(DEBUG)
-                printf("[delete] key is equal to key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+                printf("[delete] key is equal to key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(currentNode->kv).key, (unsigned int) pthread_self());
 
             if(currentNode->left == NULL) {
                 if(DEBUG)
@@ -241,7 +240,7 @@ void delete(tree *t, char *key)
         }
         else if(*key < *(currentNode->kv).key) {
             if(DEBUG)
-                printf("[delete] key is less than key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+                printf("[delete] key is less than key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(currentNode->kv).key, (unsigned int) pthread_self());
 
             if(currentNode->left != NULL) {
                 if(DEBUG)
@@ -265,7 +264,7 @@ void delete(tree *t, char *key)
         }
         else if(*key > *(currentNode->kv).key) {
             if(DEBUG)
-                printf("[delete] key is greater than key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+                printf("[delete] key is greater than key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(currentNode->kv).key, (unsigned int) pthread_self());
 
             if(currentNode->right != NULL) {
                 if(DEBUG)
@@ -327,7 +326,7 @@ int lookup(tree *t, char *key, void **value)
     if((t->kv).key != NULL) {
         if(*key == *(t->kv).key) {
             if(DEBUG)
-                printf("[lookup] key is equal to key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+                printf("[lookup] key is equal to key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key, (unsigned int) pthread_self());
 
             *value = (t->kv).value;
 
@@ -342,7 +341,7 @@ int lookup(tree *t, char *key, void **value)
         else if(*key < *(t->kv).key) {
             if(t->left != NULL) {
                 if(DEBUG)
-                    printf("[lookup] key is less than key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+                    printf("[lookup] key is less than key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key, (unsigned int) pthread_self());
 
                 ret = pthread_mutex_unlock(&(t->kv).mtx);
                 if(ret){
@@ -356,7 +355,7 @@ int lookup(tree *t, char *key, void **value)
         else if(*key > *(t->kv).key) {
             if(t->right != NULL) {
                 if(DEBUG)
-                    printf("[lookup] key is greater than key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+                    printf("[lookup] key is greater than key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key,(unsigned int) pthread_self());
 
                 ret = pthread_mutex_unlock(&(t->kv).mtx);
                 if(ret){
