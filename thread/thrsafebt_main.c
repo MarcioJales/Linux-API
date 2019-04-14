@@ -14,13 +14,17 @@ char keyToSearch[3];
 void *operate1(void *arg)
 {
     tree *root = (tree *) arg;
-    char key = 'g';
+    char key = 'h';
     void *val;
     float value = 12;
     add(root, &key, &value);
 
-    key = '7';
+    key = 'a';
     value = 44.7;
+    add(root, &key, &value);
+
+    key = 'z';
+    value = 0.77;
     add(root, &key, &value);
 
     return NULL;
@@ -73,7 +77,6 @@ int main(int argc, char **argv)
 
     initialize(root);
 
-    if(VERBOSE)
     printf("Threads to create: %d\n", numThreads);
 
     for (idx = 0; idx < numThreads; idx++) {

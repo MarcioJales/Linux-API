@@ -1,9 +1,9 @@
 #include <pthread.h>
 
-#ifdef VERBOSE
-#define VERBOSE 1
+#ifdef DEBUG
+#define DEBUG 1
 #else
-#define VERBOSE 0
+#define DEBUG 0
 #endif
 
 #define NOTFOUND  0
