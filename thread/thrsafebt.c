@@ -314,14 +314,13 @@ int lookup(tree *t, char *key, void **value)
         return NOTFOUND;
 
     ret = pthread_mutex_lock(&(t->kv).mtx);
-    if(ret){
+    if(ret) {
         fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
         exit(EXIT_FAILURE);
     }
 
-    if(DEBUG) {
+    if(DEBUG)
         printf("[lookup] key = %c, Thread ID: %u\n", *key, (unsigned int) pthread_self());
-    }
 
     if((t->kv).key != NULL) {
         if(*key == *(t->kv).key) {
@@ -339,9 +338,12 @@ int lookup(tree *t, char *key, void **value)
             return FOUND;
         }
         else if(*key < *(t->kv).key) {
+            if(DEBUG)
+                printf("[lookup] key is less than key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key, (unsigned int) pthread_self());
+
             if(t->left != NULL) {
                 if(DEBUG)
-                    printf("[lookup] key is less than key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key, (unsigned int) pthread_self());
+                    printf("[lookup] Left subtree is NOT NULL (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key, (unsigned int) pthread_self());
 
                 ret = pthread_mutex_unlock(&(t->kv).mtx);
                 if(ret){
@@ -351,11 +353,16 @@ int lookup(tree *t, char *key, void **value)
 
                 return lookup(t->left, key, value);
             }
+            if(DEBUG)
+                printf("[lookup] Left subtree is NULL (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key, (unsigned int) pthread_self());
         }
         else if(*key > *(t->kv).key) {
+            if(DEBUG)
+                printf("[lookup] key is greater than key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key,(unsigned int) pthread_self());
+
             if(t->right != NULL) {
                 if(DEBUG)
-                    printf("[lookup] key is greater than key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key,(unsigned int) pthread_self());
+                    printf("[lookup] Right subtree is NOT NULL (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key, (unsigned int) pthread_self());
 
                 ret = pthread_mutex_unlock(&(t->kv).mtx);
                 if(ret){
@@ -365,6 +372,8 @@ int lookup(tree *t, char *key, void **value)
 
                 return lookup(t->right, key, value);
             }
+            if(DEBUG)
+                printf("[lookup] Right subtree is NULL (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key, (unsigned int) pthread_self());
         }
     }
 
