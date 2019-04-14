@@ -326,6 +326,9 @@ int lookup(tree *t, char *key, void **value)
 
     if((t->kv).key != NULL) {
         if(*key == *(t->kv).key) {
+            if(DEBUG)
+                printf("[lookup] key is equal to key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
             *value = (t->kv).value;
 
             ret = pthread_mutex_unlock(&(t->kv).mtx);
@@ -338,6 +341,9 @@ int lookup(tree *t, char *key, void **value)
         }
         else if(*key < *(t->kv).key) {
             if(t->left != NULL) {
+                if(DEBUG)
+                    printf("[lookup] key is less than key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
                 ret = pthread_mutex_unlock(&(t->kv).mtx);
                 if(ret){
                     fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
@@ -349,6 +355,9 @@ int lookup(tree *t, char *key, void **value)
         }
         else if(*key > *(t->kv).key) {
             if(t->right != NULL) {
+                if(DEBUG)
+                    printf("[lookup] key is greater than key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
                 ret = pthread_mutex_unlock(&(t->kv).mtx);
                 if(ret){
                     fprintf(stderr, "(err = %d) Failed to lock mutex. Exiting...\n", ret);
