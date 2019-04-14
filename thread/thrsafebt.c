@@ -245,7 +245,7 @@ void delete(tree *t, char *key)
 
             if(currentNode->left != NULL) {
                 if(DEBUG)
-                    printf("[delete] Left subtree is NOT NULL (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+                    printf("[delete] Left subtree is NOT NULL (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
 
                 previousNode = currentNode;
                 pos = left;
@@ -269,7 +269,7 @@ void delete(tree *t, char *key)
 
             if(currentNode->right != NULL) {
                 if(DEBUG)
-                    printf("[delete] Right subtree is NOT NULL (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+                    printf("[delete] Right subtree is NOT NULL (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
 
                 previousNode = currentNode;
                 pos = right;
