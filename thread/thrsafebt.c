@@ -65,13 +65,22 @@ void add(tree *t, char *key, void *value)
     }
 
     if((t->kv).key == NULL) {
+        if(DEBUG)
+            printf("[add] key is NULL (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+
         (t->kv).key = (char *) malloc(sizeof(char));
         (t->kv).value = malloc(sizeof(8));
         memcpy((t->kv).key, key, sizeof(char));
         memcpy((t->kv).value, value, sizeof(8));
     }
     else if(*key > *(t->kv).key) {
+        if(DEBUG)
+            printf("[add] key is greater than key in this node (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+
         if(t->right == NULL) {
+            if(DEBUG)
+                printf("[add] Right subtree is NULL (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+
             t->right = (tree *) malloc(sizeof(tree));
             initialize(t->right);
         }
@@ -85,7 +94,13 @@ void add(tree *t, char *key, void *value)
         add(t->right, key, value);
     }
     else if(*key < *(t->kv).key) {
+        if(DEBUG)
+            printf("[add] key is less than key in this node (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+
         if(t->left == NULL) {
+            if(DEBUG)
+                printf("[add] Left subtree is NULL (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+
             t->left = (tree *) malloc(sizeof(tree));
             initialize(t->left);
         }
@@ -99,6 +114,9 @@ void add(tree *t, char *key, void *value)
         add(t->left, key, value);
     }
     else if(*key == *(t->kv).key) {
+        if(DEBUG)
+            printf("[add] key is equal to keu in this node (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+
         memcpy((t->kv).value, value, sizeof(8));
     }
 
