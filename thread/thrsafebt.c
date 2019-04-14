@@ -115,7 +115,7 @@ void add(tree *t, char *key, void *value)
     }
     else if(*key == *(t->kv).key) {
         if(DEBUG)
-            printf("[add] key is equal to keu in this node (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+            printf("[add] key is equal to key in this node (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
 
         memcpy((t->kv).value, value, sizeof(8));
     }
@@ -161,28 +161,56 @@ void delete(tree *t, char *key)
         }
 
         if(*key == *(currentNode->kv).key) {
+            if(DEBUG)
+                printf("[delete] key is equal to key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
             if(currentNode->left == NULL) {
+                if(DEBUG)
+                    printf("[delete] Left subtree is NULL (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
                 if(previousNode != NULL) {
-                    if(pos == right)
+                    if(pos == right) {
+                        if(DEBUG)
+                            printf("[delete] This node is right subtree (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
                         previousNode->right = currentNode->right;
-                    if(pos == left)
+                    }
+                    if(pos == left) {
+                        if(DEBUG)
+                            printf("[delete] This node is left subtree (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
                         previousNode->left = currentNode->right;
+                    }
                 }
 
                 toDelete = 1;
                 break;
             }
             else if(currentNode->right == NULL) {
+                if(DEBUG)
+                    printf("[delete] Right subtree is NULL (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
                 if(previousNode != NULL) {
-                    if(pos == right)
+                    if(pos == right) {
+                        if(DEBUG)
+                            printf("[delete] This node is right subtree (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
                         previousNode->right = currentNode->left;
-                    if(pos == left)
+                    }
+                    if(pos == left) {
+                        if(DEBUG)
+                            printf("[delete] This node is left subtree (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
                         previousNode->left = currentNode->left;
+                    }
                 }
 
                 toDelete = 1;
                 break;
             }
+
+            if(DEBUG)
+                printf("[delete] Node has both children (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
 
             leftMostNode = findLeftMostNode(currentNode->right);
 
@@ -212,7 +240,13 @@ void delete(tree *t, char *key)
             break;
         }
         else if(*key < *(currentNode->kv).key) {
+            if(DEBUG)
+                printf("[delete] key is less than key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
             if(currentNode->left != NULL) {
+                if(DEBUG)
+                    printf("[delete] Left subtree is NOT NULL (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+
                 previousNode = currentNode;
                 pos = left;
 
@@ -230,7 +264,13 @@ void delete(tree *t, char *key)
             }
         }
         else if(*key > *(currentNode->kv).key) {
-            if(t->right != NULL) {
+            if(DEBUG)
+                printf("[delete] key is greater than key in this node (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
+
+            if(currentNode->right != NULL) {
+                if(DEBUG)
+                    printf("[delete] Right subtree is NOT NULL (key = %c, value = %f, Thread ID: %u)\n", *key, *(float *) value, (unsigned int) pthread_self());
+
                 previousNode = currentNode;
                 pos = right;
 
@@ -255,14 +295,13 @@ void delete(tree *t, char *key)
             fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
             exit(EXIT_FAILURE);
         }
-        printf("[delete] mutex unlocked. key = %c , Thread ID: %u. ret = %d\n", *key, (unsigned int) pthread_self(), ret);
 
         ret = pthread_mutex_destroy(&(currentNode->kv).mtx);
         if(ret) {
             fprintf(stderr, "(err = %d) Failed to destroy mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
             exit(EXIT_FAILURE);
         }
-        printf("[delete] mutex destroyed. key = %c , Thread ID: %u\n", *key, (unsigned int) pthread_self());
+
         free(currentNode);
     }
 }
