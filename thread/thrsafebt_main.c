@@ -18,10 +18,10 @@ void *operate1(void *arg)
     void *val;
     float value = 12;
     add(root, &key, &value);
-    // 
-    // key = 'v';
-    // value = 44.7;
-    // add(root, &key, &value);
+    
+    key = 'v';
+    value = 44.7;
+    add(root, &key, &value);
     //
     // printf("Search for key %c...\n", keyToSearch[0]);
     // if(lookup(root, &keyToSearch[0], &val))
