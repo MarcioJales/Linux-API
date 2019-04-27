@@ -128,9 +128,6 @@ tree * findLeftMostNode(tree *t)
 {
     tree *currentNode = t;
 
-    if(currentNode == NULL)
-        return NULL;
-
     while(currentNode->left != NULL)
         currentNode = currentNode->left;
 
