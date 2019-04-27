@@ -53,7 +53,7 @@ The functions are compiled to a shared library. The process to execute a program
 $ gcc -c -Wall -Werror -fpic thrsafebt.c -I. -lpthread
 $ gcc -shared -o libthrsafebt.so thrsafebt.o
 $ gcc -L. -I. -Wall -o thrsafebt thrsafebt_main.c -lthrsafebt -lpthread
-$ LD_LIBRARY_PATH=. ./thrsafebt a = z
+$ LD_LIBRARY_PATH=. ./thrsafebt [ARGUMENTS]
 ```
 
 The `thrsafebt` program receives three arguments, which are three keys to be searched on a binary tree. It starts three threasd to do multiple inserts, deletes and lookups on a tree.
