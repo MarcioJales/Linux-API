@@ -124,6 +124,27 @@ void add(tree *t, char *key, void *value)
     }
 }
 
+void freeNode(tree *node)
+{
+    int ret;
+
+    free((node->kv).key);
+    free((node->kv).value);
+
+    ret = pthread_mutex_unlock(&(node->kv).mtx);
+    if(ret) {
+        fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+        exit(EXIT_FAILURE);
+    }
+    // ret = pthread_mutex_destroy(&(node->kv).mtx);
+    // if(ret) {
+    //     fprintf(stderr, "[delete] (err = %d) Failed to destroy mutex (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+    //     exit(EXIT_FAILURE);
+    // }
+
+    free(node);
+}
+
 tree * findLeftMostNode(tree *t)
 {
     tree *currentNode = t;
@@ -137,7 +158,6 @@ tree * findLeftMostNode(tree *t)
 void delete(tree *t, char *key)
 {
     int ret;
-    tree *leftMostNode = NULL;
 
     if(t == NULL) {
         printf("[delete] key = %c cannot be deleted (tree = NULL), Thread ID: %u\n", *key, (unsigned int) pthread_self());
@@ -154,7 +174,7 @@ void delete(tree *t, char *key)
     }
 
     if(*key == *(t->kv).key) {
-        tree * nodeToFree;
+        tree *leftMostNode, *left, *right;
 
         if(DEBUG)
             printf("[delete] key is equal to key in this node (key = %c, key here = %c, Thread ID: %u)\n", *key, *(t->kv).key, (unsigned int) pthread_self());
@@ -162,13 +182,13 @@ void delete(tree *t, char *key)
         if(t->left == NULL && t->right == NULL) {
             if(DEBUG)
                 printf("[delete] Both subtrees are NULL (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
-            nodeToFree = t;
+            freeNode(t);
         }
         else if(t->left == NULL) {
             if(DEBUG)
                 printf("[delete] Left subtree is NULL (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
 
-            tree* right = t->right;
+            right = t->right;
 
             ret = pthread_mutex_lock(&(right->kv).mtx);
             if(ret) {
@@ -179,26 +199,21 @@ void delete(tree *t, char *key)
             memcpy((t->kv).key, (right->kv).key, sizeof(char));
             memcpy((t->kv).value, (right->kv).value, sizeof(8));
 
-            ret = pthread_mutex_unlock(&(right->kv).mtx);
-            if(ret) {
-                fprintf(stderr, "[delete] (err = %d) Failed to unlock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
-                exit(EXIT_FAILURE);
-            }
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret) {
-                fprintf(stderr, "[delete] (err = %d) Failed to unlock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+                fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
                 exit(EXIT_FAILURE);
             }
 
             t->left = right->left;
             t->right = right->right;
-            nodeToFree = right;
+            freeNode(right);
         }
         else if(t->right == NULL) {
             if(DEBUG)
                 printf("[delete] Right subtree is NULL (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
 
-            tree* left = t->left;
+            left = t->left;
 
             ret = pthread_mutex_lock(&(left->kv).mtx);
             if(ret) {
@@ -209,26 +224,24 @@ void delete(tree *t, char *key)
             memcpy((t->kv).key, (left->kv).key, sizeof(char));
             memcpy((t->kv).value, (left->kv).value, sizeof(8));
 
-            ret = pthread_mutex_unlock(&(left->kv).mtx);
-            if(ret) {
-                fprintf(stderr, "[delete] (err = %d) Failed to unlock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
-                exit(EXIT_FAILURE);
-            }
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret) {
-                fprintf(stderr, "[delete] (err = %d) Failed to unlock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+                fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
                 exit(EXIT_FAILURE);
             }
 
             t->left = left->left;
             t->right = left->right;
-            nodeToFree = left;
+            freeNode(left);
         }
         else {
             if(DEBUG)
                 printf("[delete] Node has both children (key = %c, Thread ID: %u)\n", *key, (unsigned int) pthread_self());
 
             leftMostNode = findLeftMostNode(t->right);
+
+            if(DEBUG)
+                printf("[delete] Leftmost node found (key = %c, Thread ID: %u)\n", *(leftMostNode->kv).key, (unsigned int) pthread_self());
 
             ret = pthread_mutex_lock(&(leftMostNode->kv).mtx);
             if(ret) {
@@ -244,23 +257,15 @@ void delete(tree *t, char *key)
                 fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
                 exit(EXIT_FAILURE);
             }
+
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret) {
                 fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
                 exit(EXIT_FAILURE);
             }
 
-            nodeToFree = leftMostNode;
+            delete(leftMostNode, (leftMostNode->kv).key);
         }
-
-        free((nodeToFree->kv).key);
-        free((nodeToFree->kv).value);
-        ret = pthread_mutex_destroy(&(nodeToFree->kv).mtx);
-        if(ret) {
-            fprintf(stderr, "[delete] (err = %d) Failed to destroy mutex (Thread ID %u)\n", ret, (unsigned int) pthread_self());
-            exit(EXIT_FAILURE);
-        }
-        free(nodeToFree);
     }
     else if(*key < *(t->kv).key) {
         if(DEBUG)
@@ -280,6 +285,12 @@ void delete(tree *t, char *key)
         }
         else {
             printf("[delete] key = %c not deleted (key not found), Thread ID: %u\n", *key, (unsigned int) pthread_self());
+
+            ret = pthread_mutex_unlock(&(t->kv).mtx);
+            if(ret) {
+                fprintf(stderr, "[delete] (err = %d) Failed to lock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
+                exit(EXIT_FAILURE);
+            }
         }
     }
     else if(*key > *(t->kv).key) {
@@ -301,12 +312,6 @@ void delete(tree *t, char *key)
         else {
             printf("[delete] key = %c not deleted (key not found), Thread ID: %u\n", *key, (unsigned int) pthread_self());
         }
-    }
-
-    ret = pthread_mutex_unlock(&(t->kv).mtx);
-    if(ret) {
-        fprintf(stderr, "[delete] (err = %d) Failed to unlock mutex. Exiting... (Thread ID %u)\n", ret, (unsigned int) pthread_self());
-        exit(EXIT_FAILURE);
     }
 }
 
