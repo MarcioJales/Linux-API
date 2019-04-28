@@ -59,7 +59,7 @@ void add(tree *t, char *key, void *value)
     }
 
     if(DEBUG)
-        printf("[Thread ID: %u] [add] key = %c, value = %f\n", (unsigned int) pthread_self(), *key, *(float *) value;
+        printf("[Thread ID: %u] [add] key = %c, value = %f\n", (unsigned int) pthread_self(), *key, *(float *) value);
 
     if((t->kv).key == NULL) {
         if(DEBUG)
@@ -72,7 +72,7 @@ void add(tree *t, char *key, void *value)
     }
     else if(*key > *(t->kv).key) {
         if(DEBUG)
-            printf("[Thread ID: %u] [add] key is greater than key in this node (key = %c, key here = %c, value = %f)\n", (unsigned int) pthread_self(), *key, *(t->kv).key, *(float *) value,);
+            printf("[Thread ID: %u] [add] key is greater than key in this node (key = %c, key here = %c, value = %f)\n", (unsigned int) pthread_self(), *key, *(t->kv).key, *(float *) value);
 
         if(t->right == NULL) {
             if(DEBUG)
@@ -165,7 +165,7 @@ void delete(tree *t, char *key)
     }
 
     if(DEBUG)
-        printf("[Thread ID: %u] [delete] key = %c, Thread ID: %u\n", (unsigned int) pthread_self(), *key);
+        printf("[Thread ID: %u] [delete] key = %c\n", (unsigned int) pthread_self(), *key);
 
     ret = pthread_mutex_lock(&(t->kv).mtx);
     if(ret) {
@@ -236,7 +236,7 @@ void delete(tree *t, char *key)
         }
         else {
             if(DEBUG)
-                printf("[Thread ID: %u] [delete] Node has both children (key = %c, Thread ID: %u)\n", (unsigned int) pthread_self(), *key);
+                printf("[Thread ID: %u] [delete] Node has both children (key = %c)\n", (unsigned int) pthread_self(), *key);
 
             leftMostNode = findLeftMostNode(t->right);
 
