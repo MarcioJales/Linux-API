@@ -33,17 +33,6 @@ void *operate1(void *arg)
     value = 0.77;
     add(root, &key, &value);
 
-    key = 'w';
-    value = 44.7;
-    add(root, &key, &value);
-
-    key = 'g';
-    delete(root, &key);
-
-    key = 'f';
-    value = 41.55;
-    add(root, &key, &value);
-
     return NULL;
 };
 
@@ -52,14 +41,6 @@ void *operate2(void *arg)
     tree *root = (tree *) arg;
     char key = 'b';
     float value = 66.6;
-    add(root, &key, &value);
-
-    key = 'v';
-    value = 44.7;
-    add(root, &key, &value);
-
-    key = '7';
-    value = 44.7;
     add(root, &key, &value);
 
     key = 'a';
@@ -80,19 +61,6 @@ void *operate3(void *arg)
     key = 'q';
     value = 5711.09;
     add(root, &key, &value);
-
-    printf("Search for key %c...\n", keyToSearch[1]);
-    if(lookup(root, &keyToSearch[0], &val))
-        printf("Value for key %c: %f\n", keyToSearch[1], *((float *)val));
-    else
-        printf("Value for key %c not found\n", keyToSearch[1]);
-
-    key = 'H';
-    value = 183;
-    add(root, &key, &value);
-
-    key = 'g';
-    delete(root, &key);
 
     return NULL;
 };
@@ -135,18 +103,11 @@ int main(int argc, char **argv)
         }
     }
 
-    printf("Search for key %c...\n", keyToSearch[2]);
+    printf("Search for key %c...\n", keyToSearch[1]);
     if(lookup(root, &keyToSearch[1], &value))
-        printf("Value for key %c: %f\n", keyToSearch[2], *((float *)value));
+        printf("Value for key %c: %f\n", keyToSearch[1], *((float *)value));
     else
-        printf("Value for key %c not found\n", keyToSearch[2]);
-
-    printf("Search for key %c...\n", keyToSearch[3]);
-    if(lookup(root, &keyToSearch[2], &value))
-        printf("Value for key %c: %f\n", keyToSearch[3], *((float *)value));
-    else
-        printf("Value for key %c not found\n", keyToSearch[3]);
-
+        printf("Value for key %c not found\n", keyToSearch[1]);
 
     return 0;
 }
