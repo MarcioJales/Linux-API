@@ -69,10 +69,22 @@ void add(tree *t, char *key, void *value)
         (t->kv).value = malloc(sizeof(8));
         memcpy((t->kv).key, key, sizeof(char));
         memcpy((t->kv).value, value, sizeof(8));
+
+        ret = pthread_mutex_unlock(&(t->kv).mtx);
+        if(ret) {
+            fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+            exit(EXIT_FAILURE);
+        }
     }
     else if(*key > *(t->kv).key) {
         if(DEBUG)
             printf("[Thread ID: %u] [add] key is greater than key in this node (key = %c, key here = %c, value = %f)\n", (unsigned int) pthread_self(), *key, *(t->kv).key, *(float *) value);
+
+        ret = pthread_mutex_unlock(&(t->kv).mtx);
+        if(ret) {
+            fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+            exit(EXIT_FAILURE);
+        }
 
         if(t->right == NULL) {
             if(DEBUG)
@@ -82,17 +94,17 @@ void add(tree *t, char *key, void *value)
             initialize(t->right);
         }
 
-        ret = pthread_mutex_unlock(&(t->kv).mtx);
-        if(ret) {
-            fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
-            exit(EXIT_FAILURE);
-        }
-
         add(t->right, key, value);
     }
     else if(*key < *(t->kv).key) {
         if(DEBUG)
             printf("[Thread ID: %u] [add] key is less than key in this node (key = %c, key here = %c, value = %f)\n", (unsigned int) pthread_self(), *key, *(t->kv).key, *(float *) value);
+
+        ret = pthread_mutex_unlock(&(t->kv).mtx);
+        if(ret){
+            fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+            exit(EXIT_FAILURE);
+        }
 
         if(t->left == NULL) {
             if(DEBUG)
@@ -102,12 +114,6 @@ void add(tree *t, char *key, void *value)
             initialize(t->left);
         }
 
-        ret = pthread_mutex_unlock(&(t->kv).mtx);
-        if(ret){
-            fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
-            exit(EXIT_FAILURE);
-        }
-
         add(t->left, key, value);
     }
     else if(*key == *(t->kv).key) {
@@ -115,12 +121,12 @@ void add(tree *t, char *key, void *value)
             printf("[Thread ID: %u] [add] key is equal to key in this node (key = %c, key here = %c, value = %f)\n", (unsigned int) pthread_self(), *key, *(t->kv).key, *(float *) value);
 
         memcpy((t->kv).value, value, sizeof(8));
-    }
 
-    ret = pthread_mutex_unlock(&(t->kv).mtx);
-    if(ret) {
-        fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
-        exit(EXIT_FAILURE);
+        ret = pthread_mutex_unlock(&(t->kv).mtx);
+        if(ret) {
+            fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+            exit(EXIT_FAILURE);
+        }
     }
 }
 
