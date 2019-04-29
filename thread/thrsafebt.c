@@ -194,7 +194,7 @@ void delete(tree *t, char *key)
             freeNode(t);
 
             if(DEBUG)
-                printf("[Thread ID: %u] [add] key deleted (key = %c)\n", (unsigned int) pthread_self(), *key);
+                printf("[Thread ID: %u] [delete] key deleted (key = %c)\n", (unsigned int) pthread_self(), *key);
         }
         else if(t->left == NULL) {
             if(DEBUG)
@@ -222,7 +222,7 @@ void delete(tree *t, char *key)
             freeNode(right);
 
             if(DEBUG)
-                printf("[Thread ID: %u] [add] key deleted (key = %c)\n", (unsigned int) pthread_self(), *key);
+                printf("[Thread ID: %u] [delete] key deleted (key = %c)\n", (unsigned int) pthread_self(), *key);
         }
         else if(t->right == NULL) {
             if(DEBUG)
@@ -248,6 +248,9 @@ void delete(tree *t, char *key)
             t->left = left->left;
             t->right = left->right;
             freeNode(left);
+
+            if(DEBUG)
+                printf("[Thread ID: %u] [delete] key deleted (key = %c)\n", (unsigned int) pthread_self(), *key);
         }
         else {
             if(DEBUG)
