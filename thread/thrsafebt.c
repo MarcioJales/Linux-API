@@ -70,6 +70,9 @@ void add(tree *t, char *key, void *value)
         memcpy((t->kv).key, key, sizeof(char));
         memcpy((t->kv).value, value, sizeof(8));
 
+        if(DEBUG)
+            printf("[Thread ID: %u] [add] key added (key = %c, value = %f)\n", (unsigned int) pthread_self(), *key, *(float *) value);
+
         ret = pthread_mutex_unlock(&(t->kv).mtx);
         if(ret) {
             fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
@@ -189,6 +192,9 @@ void delete(tree *t, char *key)
             if(DEBUG)
                 printf("[Thread ID: %u] [delete] Both subtrees are NULL (key = %c)\n", (unsigned int) pthread_self(), *key);
             freeNode(t);
+
+            if(DEBUG)
+                printf("[Thread ID: %u] [add] key deleted (key = %c)\n", (unsigned int) pthread_self(), *key);
         }
         else if(t->left == NULL) {
             if(DEBUG)
@@ -214,6 +220,9 @@ void delete(tree *t, char *key)
             t->left = right->left;
             t->right = right->right;
             freeNode(right);
+
+            if(DEBUG)
+                printf("[Thread ID: %u] [add] key deleted (key = %c)\n", (unsigned int) pthread_self(), *key);
         }
         else if(t->right == NULL) {
             if(DEBUG)
