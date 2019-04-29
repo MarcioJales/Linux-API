@@ -139,7 +139,7 @@ void freeNode(tree *node)
 
     ret = pthread_mutex_unlock(&(node->kv).mtx);
     if(ret) {
-        fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+        fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
         exit(EXIT_FAILURE);
     }
     // ret = pthread_mutex_destroy(&(node->kv).mtx);
@@ -207,7 +207,7 @@ void delete(tree *t, char *key)
 
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret) {
-                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", ret, (unsigned int) pthread_self());
+                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to unlock mutex. Exiting...\n", ret, (unsigned int) pthread_self());
                 exit(EXIT_FAILURE);
             }
 
@@ -232,7 +232,7 @@ void delete(tree *t, char *key)
 
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret) {
-                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                 exit(EXIT_FAILURE);
             }
 
@@ -260,13 +260,13 @@ void delete(tree *t, char *key)
 
             ret = pthread_mutex_unlock(&(leftMostNode->kv).mtx);
             if(ret) {
-                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                 exit(EXIT_FAILURE);
             }
 
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret) {
-                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                 exit(EXIT_FAILURE);
             }
 
@@ -283,7 +283,7 @@ void delete(tree *t, char *key)
 
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret){
-                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                 exit(EXIT_FAILURE);
             }
 
@@ -294,7 +294,7 @@ void delete(tree *t, char *key)
 
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret) {
-                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                 exit(EXIT_FAILURE);
             }
         }
@@ -309,7 +309,7 @@ void delete(tree *t, char *key)
 
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret){
-                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                 exit(EXIT_FAILURE);
             }
 
@@ -320,7 +320,7 @@ void delete(tree *t, char *key)
 
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret) {
-                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                 exit(EXIT_FAILURE);
             }
         }
@@ -353,7 +353,7 @@ int lookup(tree *t, char *key, void **value)
 
             ret = pthread_mutex_unlock(&(t->kv).mtx);
             if(ret){
-                fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                 exit(EXIT_FAILURE);
             }
 
@@ -369,14 +369,22 @@ int lookup(tree *t, char *key, void **value)
 
                 ret = pthread_mutex_unlock(&(t->kv).mtx);
                 if(ret){
-                    fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                    fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                     exit(EXIT_FAILURE);
                 }
 
                 return lookup(t->left, key, value);
             }
-            if(DEBUG)
-                printf("[Thread ID: %u] [lookup] Left subtree is NULL (key = %c, key here = %c)\n", (unsigned int) pthread_self(), *key, *(t->kv).key);
+            else {
+                if(DEBUG)
+                    printf("[Thread ID: %u] [lookup] Left subtree is NULL (key = %c, key here = %c)\n", (unsigned int) pthread_self(), *key, *(t->kv).key);
+
+                ret = pthread_mutex_unlock(&(t->kv).mtx);
+                if(ret) {
+                    fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                    exit(EXIT_FAILURE);
+                }
+            }
         }
         else if(*key > *(t->kv).key) {
             if(DEBUG)
@@ -388,21 +396,23 @@ int lookup(tree *t, char *key, void **value)
 
                 ret = pthread_mutex_unlock(&(t->kv).mtx);
                 if(ret){
-                    fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                    fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
                     exit(EXIT_FAILURE);
                 }
 
                 return lookup(t->right, key, value);
             }
-            if(DEBUG)
-                printf("[Thread ID: %u] [lookup] Right subtree is NULL (key = %c, key here = %c)\n", (unsigned int) pthread_self(), *key, *(t->kv).key);
-        }
-    }
+            else {
+                if(DEBUG)
+                    printf("[Thread ID: %u] [lookup] Right subtree is NULL (key = %c, key here = %c)\n", (unsigned int) pthread_self(), *key, *(t->kv).key);
 
-    ret = pthread_mutex_unlock(&(t->kv).mtx);
-    if(ret) {
-        fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
-        exit(EXIT_FAILURE);
+                ret = pthread_mutex_unlock(&(t->kv).mtx);
+                if(ret) {
+                    fprintf(stderr, "[Thread ID: %u] (err = %d) Failed to unlock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                    exit(EXIT_FAILURE);
+                }
+            }
+        }
     }
 
     return NOTFOUND;
