@@ -317,6 +317,12 @@ void delete(tree *t, char *key)
         }
         else {
             printf("[Thread ID: %u] [delete] key = %c not deleted (key not found)\n", (unsigned int) pthread_self(),  *key);
+
+            ret = pthread_mutex_unlock(&(t->kv).mtx);
+            if(ret) {
+                fprintf(stderr, "[Thread ID: %u] [delete] (err = %d) Failed to lock mutex. Exiting...\n", (unsigned int) pthread_self(), ret);
+                exit(EXIT_FAILURE);
+            }
         }
     }
 }
