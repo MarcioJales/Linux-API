@@ -98,8 +98,8 @@ int main(int argc, char **argv)
     for (idx = 0; idx < numThreads; idx++) {
         ret = pthread_join(thread[idx], NULL);
         if (ret != 0) {
-          fprintf(stderr, "(err = %d) Failed to join thread %d. Exiting...\n", ret, idx);
-          exit(EXIT_FAILURE);
+            fprintf(stderr, "(err = %d) Failed to join thread %d. Exiting...\n", ret, idx);
+            exit(EXIT_FAILURE);
         }
     }
 
