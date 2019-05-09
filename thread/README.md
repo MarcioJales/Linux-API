@@ -1,6 +1,10 @@
 | Name | Assignment |
 | ---- | ---------- |
 | join_itself.c | Exercise 1 from chapter 29 |
+| thrsafebt.c | Exercise 2 from chapter 30 |
+| libthrsafebt.so | Exercise 2 from chapter 30 |
+| thrsafebt_main.c | Exercise 2 from chapter 30 |
+| thrsafebt.h | Exercise 2 from chapter 30 |
 
 ## Ch 29, Ex 1.
 
