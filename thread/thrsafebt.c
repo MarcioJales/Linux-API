@@ -65,10 +65,10 @@ void add(tree *t, char *key, void *value)
         if(DEBUG)
             printf("[Thread ID: %u] [add] key is NULL (key = %c)\n", (unsigned int) pthread_self(), *key);
 
-        (t->kv).key = (char *) malloc(sizeof(char));
-        (t->kv).value = malloc(sizeof(8));
-        memcpy((t->kv).key, key, sizeof(char));
-        memcpy((t->kv).value, value, sizeof(8));
+        (t->kv).key = (char *) malloc(BUF_SZ);
+        (t->kv).value = malloc(BUF_SZ);
+        memcpy((t->kv).key, key, BUF_SZ);
+        memcpy((t->kv).value, value, BUF_SZ);
 
         if(DEBUG)
             printf("[Thread ID: %u] [add] key added (key = %c)\n", (unsigned int) pthread_self(), *key);

@@ -9,6 +9,8 @@
 #define NOTFOUND  0
 #define FOUND     1
 
+#define BUF_SZ    64
+
 typedef struct keyPair {
     char *key;
     void *value;
