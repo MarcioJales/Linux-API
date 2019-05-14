@@ -71,7 +71,7 @@ void add(tree *t, char *key, void *value)
         memcpy((t->kv).value, value, sizeof(8));
 
         if(DEBUG)
-            printf("[Thread ID: %u] [add] key added (key = %c, value = %f)\n", (unsigned int) pthread_self(), *key, *(float *) value);
+            printf("[Thread ID: %u] [add] key added (key = %c)\n", (unsigned int) pthread_self(), *key);
 
         ret = pthread_mutex_unlock(&(t->kv).mtx);
         if(ret) {
