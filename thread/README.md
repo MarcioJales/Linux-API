@@ -5,7 +5,7 @@
 | libthrsafebt.so | Exercise 2 from chapter 30 |
 | thrsafebt_main.c | Exercise 2 from chapter 30 |
 | thrsafebt.h | Exercise 2 from chapter 30 |
-
+| thrsafe_path.c | Exercide 2 from chapter 31 |
 ## Ch 29, Ex 1.
 
 According to the "pthread_join" manual:
@@ -63,3 +63,7 @@ $ LD_LIBRARY_PATH=. ./thrsafebt [ARGUMENTS]
 The `thrsafebt` program receives 4 arguments, which are three keys to be searched on a binary tree. It starts 3 threads to do multiple inserts, deletes and lookups on a tree.
 
 Currently, `pthread_destroy` isn't working properly.
+
+## Ch 31, Ex 2
+
+It doesn't achieve the result intended by the book
