@@ -66,4 +66,4 @@ Currently, `pthread_destroy` isn't working properly.
 
 ## Ch 31, Ex 2
 
-It doesn't achieve the result intended by the book
+The program is a test to reproduce the non-safe behavior, but it coudn't be achieved.
