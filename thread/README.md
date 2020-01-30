@@ -66,4 +66,4 @@ Currently, `pthread_destroy` isn't working properly.
 
 ## Ch 31, Ex 2
 
-The program is a test to reproduce the non-safe behavior, but it coudn't be achieved.
+The program is a test to reproduce the non-safe behavior, but it couldn't be achieved.
