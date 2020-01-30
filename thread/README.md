@@ -5,7 +5,7 @@
 | libthrsafebt.so | Exercise 2 from chapter 30 |
 | thrsafebt_main.c | Exercise 2 from chapter 30 |
 | thrsafebt.h | Exercise 2 from chapter 30 |
-| thrsafe_path.c | Exercide 2 from chapter 31 |
+| thrsafe_path_test.c | Exercide 2 from chapter 31 |
 ## Ch 29, Ex 1.
 
 According to the "pthread_join" manual:
