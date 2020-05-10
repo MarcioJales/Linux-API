@@ -52,6 +52,9 @@ main(int argc, char *argv[])
 
     /* Receive messages, convert to uppercase, and return to client */
     for (;;) {
+        /* We sleep to show that the client will remain blocked while the receiver doesn't read the next datagram */
+        sleep(SLEEP_TIME);
+
         len = sizeof(struct sockaddr_un);
         numBytes = recvfrom(sfd, buf, BUF_SIZE, 0, (struct sockaddr *) &claddr, &len);
 

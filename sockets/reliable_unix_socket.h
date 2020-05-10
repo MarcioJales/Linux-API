@@ -20,4 +20,6 @@
 #define BUF_SIZE 10             /* Maximum size of messages exchanged
                                    between client and server */
 
+#define SLEEP_TIME 5
+
 #define SV_SOCK_PATH "/tmp/reliable_sv.sock"
