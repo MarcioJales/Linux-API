@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define SERVER_SOCKET "/tmp/seqnum_sv" /* Well-known name for server's FIFO */
+#define SERVER_SOCKET "/tmp/seqnum_sv" /* Well-known name for server's socket */
 
 #define BACKLOG 5
 
