@@ -10,8 +10,12 @@
 */
 #include <sys/un.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <ctype.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <unistd.h>
 
 #define BUF_SIZE 10             /* Maximum size of messages exchanged
                                    between client and server */

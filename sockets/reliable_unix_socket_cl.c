@@ -21,7 +21,7 @@ main(int argc, char *argv[])
     char resp[BUF_SIZE];
 
     if (argc < 2 || strcmp(argv[1], "--help") == 0) {
-        fprintf(stderr, "Usage: ./reliable_unix_sv\n");
+        fprintf(stderr, "Usage: ./reliable_unix_sv message_1 [message_2] ...\n");
         exit(EXIT_FAILURE);
     }
 

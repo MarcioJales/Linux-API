@@ -21,8 +21,10 @@ main(int argc, char *argv[])
     char buf[BUF_SIZE];
 
     sfd = socket(AF_UNIX, SOCK_DGRAM, 0);       /* Create server socket */
-    if (sfd == -1)
-        errExit("socket");
+    if (sfd == -1) {
+        fprintf(stderr, "Error when creating socket\n");
+        exit(EXIT_FAILURE);
+    }
 
     /* Construct well-known address and bind server socket to it */
 
