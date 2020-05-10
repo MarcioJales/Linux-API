@@ -50,8 +50,10 @@ main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
+    unsigned int i = 1;
     /* Receive messages, convert to uppercase, and return to client */
     for (;;) {
+
         /* We sleep to show that the client will remain blocked while the receiver doesn't read the next datagram */
         sleep(SLEEP_TIME);
 
@@ -63,6 +65,7 @@ main(int argc, char *argv[])
             exit(EXIT_FAILURE);
         }
 
-        printf("Server received %ld bytes from %s\n", (long) numBytes, claddr.sun_path);
+        printf("[%u] Server received %ld bytes from %s\n", i, (long) numBytes, claddr.sun_path);
+        i++;
     }
 }

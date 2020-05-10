@@ -54,7 +54,7 @@ main(int argc, char *argv[])
             fprintf(stderr, "sendto Error\n");
             exit(EXIT_FAILURE);
         } else {
-            printf("Sent %lu bytes\n", msgLen);
+            printf("[%u] Sent %lu bytes\n", j, msgLen);
         }
     }
 
