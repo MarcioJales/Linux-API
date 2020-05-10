@@ -64,13 +64,5 @@ main(int argc, char *argv[])
         }
 
         printf("Server received %ld bytes from %s\n", (long) numBytes, claddr.sun_path);
-
-        for (j = 0; j < numBytes; j++)
-            buf[j] = toupper((unsigned char) buf[j]);
-
-        if (sendto(sfd, buf, numBytes, 0, (struct sockaddr *) &claddr, len) != numBytes) {
-            fprintf(stderr, "sendto Error\n");
-            exit(EXIT_FAILURE);
-        }
     }
 }

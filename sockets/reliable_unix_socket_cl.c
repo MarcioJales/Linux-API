@@ -53,17 +53,9 @@ main(int argc, char *argv[])
         if (sendto(sfd, argv[j], msgLen, 0, (struct sockaddr *) &svaddr, sizeof(struct sockaddr_un)) != msgLen) {
             fprintf(stderr, "sendto Error\n");
             exit(EXIT_FAILURE);
+        } else {
+            printf("Sent %lu bytes\n", msgLen);
         }
-
-        numBytes = recvfrom(sfd, resp, BUF_SIZE, 0, NULL, NULL);
-        /* Or equivalently: numBytes = recv(sfd, resp, BUF_SIZE, 0);
-                        or: numBytes = read(sfd, resp, BUF_SIZE); */
-        if (numBytes == -1) {
-            fprintf(stderr, "recvfrom Error\n");
-            exit(EXIT_FAILURE);
-        }
-
-        printf("Response %d: %.*s\n", j, (int) numBytes, resp);
     }
 
     remove(claddr.sun_path);            /* Remove client socket pathname */
