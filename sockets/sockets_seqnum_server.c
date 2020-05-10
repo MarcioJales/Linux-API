@@ -1,5 +1,5 @@
 /*
-   Chapter 57, exercise 2:
+   Chapter 57, exercise 3:
 
    Reimplement the sequence-number server and client of
    "A Client-Server Application Using FIFOs" using UNIX domain stream sockets.
