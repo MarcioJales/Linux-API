@@ -31,3 +31,17 @@ $ ./sched_set f 25 6837
 $ ./sched_view 6837
 6837: FIFO  25
 ```
+
+In `sched_set_cap.c`, we still need the include `cap_sys_nice` at the permitted set, but the capability-aware program now make it effective:
+
+```
+$ cc -std=c99 -D_XOPEN_SOURCE=600 -D_DEFAULT_SOURCE -g -I../../The-Linux-Programming-Interface/lib -pedantic -Wall -W -Wmissing-prototypes -Wno-sign-compare -Wno-unused-parameter    sched_set_cap.c ../../The-Linux-Programming-Interface/libtlpi.a -lm  -o sched_set_cap -lcap
+$ sudo setcap "cap_sys_nice=p" sched_set_cap
+$ sleep 600 &
+[2] 5816
+$ ../../The-Linux-Programming-Interface/procpri/sched_view 5816
+5816: OTHER  0
+$ ./sched_set_cap f 25 5816
+$ ../../The-Linux-Programming-Interface/procpri/sched_view 5816
+5816: FIFO  25
+```
