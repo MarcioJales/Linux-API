@@ -28,9 +28,23 @@ static int
 raiseCap(int capability)
 {
     cap_t caps;
+    const cap_value_t cap_array[] = { capability };
 
     caps = cap_get_proc();
     if (caps == NULL)
+        return -1;
+
+    if (cap_set_flag(caps, CAP_EFFECTIVE, 1, cap_array, CAP_SET) == -1) {
+        cap_free(caps);
+        return -1;
+    }
+
+    if (cap_set_proc(caps) == -1) {
+        cap_free(caps);
+        return -1;
+    }
+
+    if (cap_free(caps) == -1)
         return -1;
     
     return 0;
