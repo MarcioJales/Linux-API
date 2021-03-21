@@ -25,7 +25,7 @@
 
 // "static" key work was used to stop warning about prototype
 static int
-raiseCap(int capability)
+modifyCap(int capability, int cap_op)
 {
     cap_t caps;
     const cap_value_t cap_array[] = { capability };
@@ -34,7 +34,7 @@ raiseCap(int capability)
     if (caps == NULL)
         return -1;
 
-    if (cap_set_flag(caps, CAP_EFFECTIVE, 1, cap_array, CAP_SET) == -1) {
+    if (cap_set_flag(caps, CAP_EFFECTIVE, 1, cap_array, cap_op) == -1) {
         cap_free(caps);
         return -1;
     }
@@ -87,12 +87,15 @@ main(int argc, char *argv[])
 
     sp.sched_priority = getInt(argv[2], 0, "priority");
 
-    if (raiseCap(CAP_SYS_NICE) == -1)
+    if (modifyCap(CAP_SYS_NICE, CAP_SET) == -1)
         fatal("raiseCap() failed");
 
     for (j = 3; j < argc; j++)
         if (sched_setscheduler(getLong(argv[j], 0, "pid"), pol, &sp) == -1)
             errExit("sched_setscheduler");
+    
+    if (modifyCap(CAP_SYS_NICE, CAP_CLEAR) == -1)
+        fatal("raiseCap() failed");
 
     exit(EXIT_SUCCESS);
 }
