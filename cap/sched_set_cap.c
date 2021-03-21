@@ -20,7 +20,21 @@
  */
 
 #include <sched.h>
+#include <sys/capability.h>
 #include "tlpi_hdr.h"
+
+// "static" key work was used to stop warning about prototype
+static int
+raiseCap(int capability)
+{
+    cap_t caps;
+
+    caps = cap_get_proc();
+    if (caps == NULL)
+        return -1;
+    
+    return 0;
+}
 
 int
 main(int argc, char *argv[])
@@ -58,6 +72,9 @@ main(int argc, char *argv[])
                 SCHED_OTHER;
 
     sp.sched_priority = getInt(argv[2], 0, "priority");
+
+    if (raiseCap(CAP_SYS_NICE) == -1)
+        fatal("raiseCap() failed");
 
     for (j = 3; j < argc; j++)
         if (sched_setscheduler(getLong(argv[j], 0, "pid"), pol, &sp) == -1)
