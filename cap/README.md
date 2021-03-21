@@ -12,7 +12,7 @@ $ cc -std=c99 -D_XOPEN_SOURCE=600 -D_DEFAULT_SOURCE -g -I../lib -pedantic -Wall 
 
 The capability we need is the `CAP_SYS_NICE`, since the program uses the `sched_setscheduler()` function.
 
-We may show that using the binary from the book, using the same example it uses, and the `setcap` utility:
+We may show that using the binary from the book, with the same example it uses, and the `setcap` utility:
 
 ```
 sleep 600 &
