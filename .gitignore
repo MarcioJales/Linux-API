@@ -1,3 +1,4 @@
 /filesys/Script
 /thread/thrsafe_path_test
 /cap/sched_set_cap
+mmap/cpmap
