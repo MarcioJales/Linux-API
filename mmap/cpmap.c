@@ -5,11 +5,21 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 int main(int argc, char** argv)
 {
+  int fd_input, fd_output;
+
   if(argc != 3) {
-    fprintf(stderr, "Give 2 filenames\n");
+    fprintf(stderr, "Give 2 filenames: input first and output second\n");
+    exit(EXIT_FAILURE);
+  }
+
+  fd_input = open(argv[1], O_RDONLY);
+  if(fd_input == -1) {
+    fprintf(stderr, "Error to open input file\n");
     exit(EXIT_FAILURE);
   }
 
