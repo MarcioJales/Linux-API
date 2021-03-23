@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/mman.h>
+#include <unistd.h>
 
 int main(int argc, char** argv)
 {
@@ -32,6 +33,20 @@ int main(int argc, char** argv)
   }
 
   addr = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd_input, 0);
+
+  /* According to the book: 
+  Once mmap() has been called, we can close the file descriptor without affecting the mapping.
+  */
+  if(close(fd_input) == -1) {
+    fprintf(stderr, "Failed to close input file\n");
+    exit(EXIT_FAILURE);
+  }
+
+  fd_output = open(argv[1], O_WRONLY | O_CREAT);
+  if(fd_output == -1) {
+    fprintf(stderr, "Error to open output file\n");
+    exit(EXIT_FAILURE);
+  }
 
   return 0;
 }
