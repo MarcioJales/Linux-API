@@ -11,6 +11,7 @@
 int main(int argc, char** argv)
 {
   int fd_input, fd_output;
+  struct stat statbuf;
 
   if(argc != 3) {
     fprintf(stderr, "Give 2 filenames: input first and output second\n");
@@ -20,6 +21,11 @@ int main(int argc, char** argv)
   fd_input = open(argv[1], O_RDONLY);
   if(fd_input == -1) {
     fprintf(stderr, "Error to open input file\n");
+    exit(EXIT_FAILURE);
+  }
+
+  if(fstat(fd_input, &statbuf) == -1) {
+    fprintf(stderr, "Error to get file information\n");
     exit(EXIT_FAILURE);
   }
 
