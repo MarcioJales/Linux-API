@@ -9,12 +9,13 @@
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <string.h>
 
 int main(int argc, char** argv)
 {
   int fd_input, fd_output;
   struct stat statbuf;
-  char *addr;
+  char *addr_input, *addr_output;
 
   if(argc != 3) {
     fprintf(stderr, "Give 2 filenames: input first and output second\n");
@@ -32,7 +33,7 @@ int main(int argc, char** argv)
     exit(EXIT_FAILURE);
   }
 
-  addr = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd_input, 0);
+  addr_input = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd_input, 0);
 
   /* According to the book: 
   Once mmap() has been called, we can close the file descriptor without affecting the mapping.
@@ -47,6 +48,15 @@ int main(int argc, char** argv)
     fprintf(stderr, "Error to open output file\n");
     exit(EXIT_FAILURE);
   }
+
+  if(ftruncate(fd_output, statbuf.st_size)) {
+    fprintf(stderr, "Error to truncate output file\n");
+    exit(EXIT_FAILURE);    
+  }
+
+  addr_output = mmap(NULL, statbuf.st_size, PROT_WRITE, MAP_SHARED, fd_output, 0);
+
+  memcpy(addr_output, addr_input, statbuf.st_size);
 
   return 0;
 }
