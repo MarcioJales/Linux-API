@@ -58,5 +58,13 @@ int main(int argc, char** argv)
   
   memcpy(addr_output, addr_input, statbuf.st_size);
 
+  if(close(fd_output) == -1) {
+    fprintf(stderr, "Failed to close output file\n");
+    exit(EXIT_FAILURE);
+  }
+
+  munmap(addr_input, statbuf.st_size);
+  munmap(addr_output, statbuf.st_size);
+
   return 0;
 }
