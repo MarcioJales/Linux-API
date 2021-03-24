@@ -34,6 +34,10 @@ int main(int argc, char** argv)
   }
 
   addr_input = mmap(NULL, statbuf.st_size, PROT_READ, MAP_SHARED, fd_input, 0);
+  if (addr_input == MAP_FAILED) {
+    fprintf(stderr, "Failed to map address for input\n");
+    exit(EXIT_FAILURE);    
+  }
 
   /* According to the book: 
   Once mmap() has been called, we can close the file descriptor without affecting the mapping.
@@ -55,6 +59,10 @@ int main(int argc, char** argv)
   }
 
   addr_output = mmap(NULL, statbuf.st_size, PROT_WRITE, MAP_SHARED, fd_output, 0);
+  if (addr_output == MAP_FAILED) {
+    fprintf(stderr, "Failed to map address for output\n");
+    exit(EXIT_FAILURE);    
+  }
   
   memcpy(addr_output, addr_input, statbuf.st_size);
 
@@ -63,6 +71,7 @@ int main(int argc, char** argv)
     exit(EXIT_FAILURE);
   }
 
+  /* Didn't write error handling below */
   munmap(addr_input, statbuf.st_size);
   munmap(addr_output, statbuf.st_size);
 
