@@ -43,7 +43,7 @@ int main(int argc, char** argv)
     exit(EXIT_FAILURE);
   }
 
-  fd_output = open(argv[1], O_WRONLY | O_CREAT);
+  fd_output = open(argv[2], O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);
   if(fd_output == -1) {
     fprintf(stderr, "Error to open output file\n");
     exit(EXIT_FAILURE);
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
   }
 
   addr_output = mmap(NULL, statbuf.st_size, PROT_WRITE, MAP_SHARED, fd_output, 0);
-
+  
   memcpy(addr_output, addr_input, statbuf.st_size);
 
   return 0;
