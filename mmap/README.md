@@ -14,4 +14,5 @@ Files were created using `dd`:
 
 ```
 $ dd if=/dev/zero of=case1.txt bs=1 count=6000
+$ dd if=/dev/zero of=case2.txt bs=1 count=2200
 ```
