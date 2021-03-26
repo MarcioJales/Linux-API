@@ -3,3 +3,4 @@
 /cap/sched_set_cap
 mmap/cpmap
 mmap/COPY.md
+mmap/mmap_sig
