@@ -2,7 +2,7 @@
 | ---- | ---------- |
 | overhead.c | Exercise 1 from chapter 14 |
 
-## Ex 1. - Creating and removing files from distinct filesystems
+## Ex. 1 - Creating and removing files from distinct filesystems
 
 *Incomplete.*
 
