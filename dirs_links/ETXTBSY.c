@@ -15,12 +15,17 @@
 int main() {
   pid_t pidfork;
 
-  /* Fork is explained at chapter 24 */
+  /* fork() is explained on chapter 24 */
   pidfork = fork();
   if(pidfork == -1)
     exit(EXIT_FAILURE);
 
   if(pidfork == 0) {
+    char *argVec[] = { NULL };
+    char *envVec[] = { NULL };
+
+    /* execve() is explained on chapter 27 */
+    execve("./longrunner", argVec, envVec);
   }
   else {
 
