@@ -11,6 +11,10 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <stdio.h>
 
 int main() {
   pid_t pidfork;
@@ -28,6 +32,14 @@ int main() {
     execve("./longrunner", argVec, envVec);
   }
   else {
+    sleep(10);
 
+    int fd = open("./longrunner", O_WRONLY);
+    if(fd == -1) {
+      if(errno == ETXTBSY)
+        fprintf(stderr, "Error: ETXTBSY");
+    }
   }
+
+  return 0;
 }
