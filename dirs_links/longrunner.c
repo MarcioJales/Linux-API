@@ -9,12 +9,18 @@
 // The last command overwrites the existing executable of the same name. How is this possible? 
 // (For a clue, use ls –li to look at the i-node number of the executable file after each compilation.)
 
+#include <sys/time.h>
+
 int main() {
   int x = 0;
+  struct timeval start, end;
+  gettimeofday(&start, ((void *) 0));
+  gettimeofday(&end, ((void *) 0));
 
-  while(1) {
+  while((double)end.tv_sec - (double)start.tv_sec < 20) {
     x = x++;
     x = x--;
+    gettimeofday(&end, ((void *) 0));
   }
 
   return 0;
