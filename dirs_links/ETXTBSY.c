@@ -28,16 +28,18 @@ int main() {
     char *argVec[] = { NULL };
     char *envVec[] = { NULL };
 
+    printf("Executing longrunner...\n");
     /* execve() is explained on chapter 27 */
     execve("./longrunner", argVec, envVec);
   }
   else {
     sleep(10);
 
+    printf("Opening longrunner...\n");
     int fd = open("./longrunner", O_WRONLY);
     if(fd == -1) {
       if(errno == ETXTBSY)
-        fprintf(stderr, "Error: ETXTBSY");
+        fprintf(stderr, "Error: ETXTBSY\n");
     }
   }
 
