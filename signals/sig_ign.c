@@ -16,4 +16,6 @@ handler(int sig)
 int
 main(int argc, char *argv[])
 {
+    const int sigNumber = 10; /* Hardcoded SIGUSR1 */
+    const int numSecs = 20;   
 }
