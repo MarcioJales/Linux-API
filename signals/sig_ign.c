@@ -43,5 +43,36 @@ main(int argc, char *argv[])
         errExit("sigprocmask");
 
     printf("sleeping for %d seconds with SIGUSR1 blocked\n", numSecs);
-    sleep(numSecs);  
+    sleep(numSecs);
+
+    /* Show that signal is pending and, then, change its disposition to SIG_IGN 
+    */
+
+    if (sigpending(&pendingMask) == -1)
+        errExit("sigpending");
+
+    printf("pending signals are: \n");
+    printSigset(stdout, "\t\t", &pendingMask);
+
+    sigemptyset(&sa.sa_mask);
+    sa.sa_flags = 0;
+    sa.sa_handler = SIG_IGN;
+
+    (void) sigaction(sigNumber, &sa, NULL);
+
+    printf("sleeping for %d seconds with SIGUSR1 (hopefully) pending\n", numSecs);
+    sleep(numSecs); 
+
+    /* Unblock the signal and print how many times it was caught
+    ** We expect that none
+    */
+
+    sigdelset(&blockSIGUSR1, sigNumber);
+    if (sigprocmask(SIG_UNBLOCK, &blockSIGUSR1, NULL) == -1)
+        errExit("sigprocmask");
+
+    printf("Signal %d caught %d time%s\n", sigNumber,
+                    sigCnt, (sigCnt == 1) ? "" : "s");
+
+    exit(EXIT_SUCCESS); 
 }
