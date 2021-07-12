@@ -25,9 +25,23 @@ main(int argc, char *argv[])
 
     printf("%s: PID is %ld\n", argv[0], (long) getpid());
 
+    /* Install the disposition that counts number of signals caught
+    */
+
     sigemptyset(&sa.sa_mask);
     sa.sa_flags = 0;          
     sa.sa_handler = handler;
 
-    (void) sigaction(sigNumber, &sa, NULL);    
+    (void) sigaction(sigNumber, &sa, NULL); 
+
+    /* Add signal to the set, block it and sleep while blocked
+    */
+
+    sigemptyset(&blockSIGUSR1);
+    sigaddset(&blockSIGUSR1, sigNumber);
+    if (sigprocmask(SIG_BLOCK, &blockSIGUSR1, NULL) == -1)
+        errExit("sigprocmask");
+
+    printf("sleeping for %d seconds with SIGUSR1 blocked\n", numSecs);
+    sleep(numSecs);  
 }
