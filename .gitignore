@@ -6,3 +6,4 @@ mmap/COPY.md
 mmap/mmap_sig
 dirs_links/longrunner
 dirs_links/ETXTBSY
+signals/flags_effect

@@ -2,6 +2,7 @@
 | ---- | ---------- |
 | sig_receiver.c  | Exercise 1 from chapter 20 |
 | sig_ign.c  | Exercise 2 from chapter 20 |
+| flags_effect.c  | Exercise 3 from chapter 20 |
 
 ## Chapter 20, exercise 1
 
@@ -26,4 +27,8 @@ pending signals are:
 sleeping for 20 seconds with SIGUSR1 (hopefully) pending
 Signal 10 caught 0 times
 ```
+
+## Chapter 20, exercise 3
+
+We must provide `SA_NODEFER` or `SA_RESETHAND` as an argument
 
