@@ -38,15 +38,18 @@ main(int argc, char *argv[])
 {
     int n, numSecs;
     sigset_t pendingMask, blockingMask, emptyMask;
+    struct sigaction sa;
 
     printf("%s: PID is %ld\n", argv[0], (long) getpid());
 
-    /* Here we use the simpler signal() API to establish a signal handler,
-       but for the reasons described in Section 22.7 of TLPI, sigaction()
-       is the (strongly) preferred API for this task. */
+    /* Here, we replace the use of signal() with sigaction() */
+
+    sigemptyset(&sa.sa_mask); /* Do not block any signal during handler execution */
+    sa.sa_flags = 0;          /* Do not specify flags to the handler */
+    sa.sa_handler = handler;  /* Define the handler */
 
     for (n = 1; n < NSIG; n++)          /* Same handler for all signals */
-        (void) signal(n, handler);      /* Ignore errors */
+        (void) sigaction(n, &sa, NULL);      /* Ignore errors */
 
     /* If a sleep time was specified, temporarily block all signals,
        sleep (while another process sends us signals), and then
