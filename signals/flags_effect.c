@@ -60,8 +60,10 @@ int main(int argc, char *argv[])
         
         printf("%ld: Paused. Use 'kill' to send SIGUSR1\n", (long) getpid());
         pause();
-        
-        /* Provide the flag */
+
+        /* Provide the flag*
+        ** If we send multiple SIGUSR1, message will be immediately printed, instead of the signal being pending
+        */
         sa.sa_flags = SA_NODEFER;
         
         (void) sigaction(SIGUSR1, &sa, NULL);
