@@ -60,6 +60,14 @@ int main(int argc, char *argv[])
         
         printf("%ld: Paused. Use 'kill' to send SIGUSR1\n", (long) getpid());
         pause();
+        
+        /* Provide the flag */
+        sa.sa_flags = SA_NODEFER;
+        
+        (void) sigaction(SIGUSR1, &sa, NULL);
+        
+        printf("%ld: Paused again. Use 'kill' to send SIGUSR1\n", (long) getpid());
+        pause();
     }
     else {
         fprintf(stderr, "Please, provide either SA_RESETHAND or SA_NODEFER\n");
