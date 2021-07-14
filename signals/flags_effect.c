@@ -10,9 +10,16 @@
 #include <unistd.h>
 
 static void
-handler()
+handler_resethand()
 {
     fprintf(stdout, "SIGINT brought us here\n");;
+}
+
+static void
+handler_nodefer()
+{
+    fprintf(stdout, "SIGUSR1 brought us here\nAnd now I sleep 10 seconds\n");
+    sleep(10);
 }
 
 int main(int argc, char *argv[]) 
@@ -20,7 +27,6 @@ int main(int argc, char *argv[])
     struct sigaction sa;
 
     sigemptyset(&sa.sa_mask);          
-    sa.sa_handler = handler;
 
     if(argc != 2) {
         fprintf(stderr, "Provide 1 argument, either SA_RESETHAND or SA_NODEFER\n");
@@ -31,6 +37,7 @@ int main(int argc, char *argv[])
         /* To test the flag, we first install a handler that simply prints a message 
         ** We use SIGINT in this example
         */
+        sa.sa_handler = handler_resethand;
         sa.sa_flags = SA_RESETHAND;
 
         (void) sigaction(SIGINT, &sa, NULL); 
@@ -43,7 +50,16 @@ int main(int argc, char *argv[])
         pause();
     }
     else if(!strcmp(argv[1], "SA_NODEFER")) {
-        fprintf(stdout, "SA_NODEFER\n");
+        /* We use SIGUSR1 in this example 
+        ** First, we show that signal is blocked indeed
+        */
+        sa.sa_handler = handler_nodefer;
+        sa.sa_flags = 0;
+        
+        (void) sigaction(SIGUSR1, &sa, NULL);
+        
+        printf("%ld: Paused. Use 'kill' to send SIGUSR1\n", (long) getpid());
+        pause();
     }
     else {
         fprintf(stderr, "Please, provide either SA_RESETHAND or SA_NODEFER\n");
